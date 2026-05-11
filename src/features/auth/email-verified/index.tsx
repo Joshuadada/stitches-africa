@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/components/shared/button"
+import Button from "@/shared/components/button"
 import Image from "next/image"
 
 const EmailVerified = () => {

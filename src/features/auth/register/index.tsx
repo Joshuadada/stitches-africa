@@ -1,11 +1,11 @@
 "use client";
 
-import Button from '@/components/shared/button'
+import Button from '@/shared/components/button'
 import Link from 'next/link'
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Input from '@/components/shared/input';
+import Input from '@/shared/components/input';
 import { RegisterFormData, registerSchema } from '@/schema/auth/register.schema';
 
 const Register = () => {

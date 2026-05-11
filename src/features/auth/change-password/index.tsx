@@ -1,7 +1,7 @@
 "use client"
 
-import Button from "@/components/shared/button";
-import Input from "@/components/shared/input";
+import Button from "@/shared/components/button";
+import Input from "@/shared/components/input";
 import { ChangePasswordFormData, changePasswordSchema } from "@/schema/auth/change-password.schema";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';

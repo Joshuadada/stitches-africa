@@ -1,12 +1,12 @@
 "use client";
 
-import Button from '@/components/shared/button'
+import Button from '@/shared/components/button'
 import Link from 'next/link'
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { LoginFormData, loginSchema } from '@/schema/auth/login.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Input from '@/components/shared/input';
+import Input from '@/shared/components/input';
 
 const Login = () => {
     const {

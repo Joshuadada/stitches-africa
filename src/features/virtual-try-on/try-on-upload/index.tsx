@@ -1,6 +1,6 @@
 "use client";
 
-import Button from '@/components/shared/button'
+import Button from '@/shared/components/button'
 import ImageUpload from './image-upload';
 import { useState } from 'react';
 
