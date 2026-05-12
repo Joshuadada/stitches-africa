@@ -120,9 +120,10 @@ const RegisterBusinessDetails = () => {
                         <Input
                             label="Years in Operation"
                             name="yearsInOperation"
-                            type="number"
+                            type="string"
                             required
                             register={register}
+                            registerOptions={{ valueAsNumber: true }}
                             error={errors.yearsInOperation}
                         />
                     </div>

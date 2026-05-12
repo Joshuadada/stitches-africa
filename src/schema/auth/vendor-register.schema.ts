@@ -49,14 +49,14 @@ export const registerBusinessDetailsSchema = z.object({
     phoneNumber: z
         .string()
         .regex(
-            /^\+?[1-9]\d{6,14}$/,
+            /^(0\d{10}|\+234\d{10})$/,
             "Enter a valid phone number"
         ),
 
     whatsappNumber: z
         .string()
         .regex(
-            /^\+?[1-9]\d{6,14}$/,
+            /^(0\d{10}|\+234\d{10})$/,
             "Enter a valid WhatsApp number"
         ),
 });
