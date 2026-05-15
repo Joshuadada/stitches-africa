@@ -26,7 +26,7 @@ const Right = () => {
         useSubmitVendorLogin(reset);
 
     return (
-        <div className="pt-8 sm:pt-10 md:pt-12 lg:pt-14 pb-5 sm:pb-6 md:pb-7 lg:pb-8 px-8 sm:px-16 md:px-24 lg:px-36 h-full overflow-y-auto">
+        <div className="pt-8 sm:pt-10 md:pt-12 lg:pt-14 pb-5 sm:pb-6 md:pb-7 lg:pb-8 px-8 sm:px-16 md:px-24 lg:px-36 h-full overflow-y-auto bg-[#FAF7F2]">
             <div className="flex flex-col gap-2 sm:gap-3 md:gap-4 lg:gap-5.5 mb-14 sm:mb-16 md:mb-18 lg:mb-21">
                 <p className="text-[#B5894A] font-medium text-[10px] sm:text-xs md:text-sm lg:text-base">
                     VENDOR PORTAL SIGN IN
