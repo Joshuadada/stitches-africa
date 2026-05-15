@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 
 const HeroSection = () => {
     const router = useRouter()
-    
+
     return (
         <div className='px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20'>
             <div className="relative overflow-hidden bg-[url('/svgs/hero-bg.svg')] bg-cover bg-center px-8 sm:px-12 md:px-16 lg:px-20 py-12 sm:py-16 md:py-20 lg:py-24">
@@ -32,7 +32,7 @@ const HeroSection = () => {
 
                     <div className="flex gap-4 sm:gap-5 md:gap-6 lg:gap-7 items-center">
                         <Button
-                            onClick={() => router.replace('/vendor/register')}
+                            onClick={() => { }}
                             type='submit'
                             className='bg-transparent border border-white rounded-[100px]! p-2.5 sm:p-3 md:p-4 lg:p-5.5 max-w-[244] w-full'
                         >
@@ -42,7 +42,7 @@ const HeroSection = () => {
                         </Button>
 
                         <Button
-                            onClick={() => { }}
+                            onClick={() => router.replace('/vendor/register')}
                             type='submit'
                             className='bg-[#E2D5BE] rounded-[100px]! p-2.5 sm:p-3 md:p-4 lg:p-5.5 max-w-[244] w-full'
                         >
