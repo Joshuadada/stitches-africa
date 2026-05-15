@@ -15,11 +15,13 @@ import {
 
 import EmailOtpModal from "@/shared/components/email-otp-modal";
 import { useAuthStore } from "@/store/auth";
+import { useRouter } from "next/navigation";
 
 
 const RegisterStart = () => {
     const [openOtpModal, setOpenOtpModal] = useState(false);
     const { setVendorRegisterEmail, setVendorRegisterPhone } = useAuthStore()
+    const router = useRouter();
 
     const {
         register,
@@ -57,7 +59,7 @@ const RegisterStart = () => {
                             <span>Already have an account?</span>
 
                             <Link
-                                href={''}
+                                href={'/vendor/login'}
                                 className='font-bold underline'
                             >
                                 Login
