@@ -83,7 +83,7 @@ const Header = () => {
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            {mobileMenuOpen ? <X size={22} className="text-black" /> : <Menu size={22} className="text-black" />}
           </button>
         </div>
       </div>
