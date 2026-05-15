@@ -1,95 +1,70 @@
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { useAuthStore } from "@/store/auth";
-
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 function getToken() {
   const authState = useAuthStore.getState();
-
-  // if (authState.userType === "individual") {
-  //   return authState.user?.accessToken || "";
-  // } else if (authState.userType === "business") {
-  //   return authState.businessUser?.accessToken || "";
-  // }
-
   return authState.user?.accessToken || "";
 }
 
-// Generic Fetch Function
-async function request<T>(url: string, options?: RequestInit): Promise<T> {
-  const token = getToken();
-  const isFormData = options?.body instanceof FormData;
+// Create Axios instance
+const axiosInstance = axios.create({
+  baseURL: BASE_URL,
+});
 
-  // Explicitly define headers object as a Record<string, string>
-  const headers: Record<string, string> = {};
+// ─── Request Interceptor ───────────────────────────────────────────────────────
+axiosInstance.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const token = getToken();
 
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
-  if (!isFormData) {
-    headers["Content-Type"] = "application/json";
-  }
-
-  // Merge in additional headers if provided
-  if (options?.headers) {
-    Object.assign(headers, options.headers);
-  }
-
-  const res = await fetch(`${BASE_URL}${url}`, {
-    ...options,
-    headers,
-  });
-
-  if (!res.ok) {
-    const errorResponse = await res.json();
-
-    if (res.status === 401) {
-      localStorage.clear();
-      location.replace("/");
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
 
-    throw errorResponse;
+    // Axios sets Content-Type automatically for FormData, so only set it for non-FormData
+    if (!(config.data instanceof FormData)) {
+      config.headers["Content-Type"] = "application/json";
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// ─── Response Interceptor ─────────────────────────────────────────────────────
+axiosInstance.interceptors.response.use(
+  (response) => response.data, // unwrap data automatically
+  (error: AxiosError) => {
+    const status = error.response?.status;
+    const errorData = error.response?.data;
+
+    if (status === 401) {
+      localStorage.clear();
+      // location.replace("/");
+    }
+
+    return Promise.reject(errorData); // throw the same shape as before
   }
+);
 
-  return res.json();
-}
-
-// GET
+// ─── HTTP Methods ─────────────────────────────────────────────────────────────
 export async function get<T>(url: string): Promise<T> {
-  return request<T>(url);
+  return axiosInstance.get(url);
 }
 
-// POST
 export async function post<T>(url: string, body: any): Promise<T> {
-  const isFormData = body instanceof FormData;
-
-  return request<T>(url, {
-    method: "POST",
-    body: isFormData ? body : JSON.stringify(body),
-    headers: isFormData ? {} : { "Content-Type": "application/json" },
-  });
+  return axiosInstance.post(url, body);
 }
 
-// PUT (Full Update)
 export async function put<T>(url: string, body: any): Promise<T> {
-  return request<T>(url, {
-    method: "PUT",
-    body: JSON.stringify(body),
-  });
+  return axiosInstance.put(url, body);
 }
 
-// PATCH (Partial Update)
 export async function patch<T>(url: string, body: any): Promise<T> {
-  return request<T>(url, {
-    method: "PATCH",
-    body: JSON.stringify(body),
-  });
+  return axiosInstance.patch(url, body);
 }
 
-// DELETE
 export async function deleteRequest<T>(url: string): Promise<T> {
-  return request<T>(url, {
-    method: "DELETE",
-  });
+  return axiosInstance.delete(url);
 }

@@ -1,9 +1,13 @@
-import RegisterBusinessDetails from '@/features/vendor/auth/register/business-details';
+"use client"
+
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 const RegisterPage = () => {
-  return (
-    <RegisterBusinessDetails />
-  )
+    const router = useRouter()
+    useEffect(() => {
+        router.replace('/vendor/register/start')
+    })
 }
 
 export default RegisterPage

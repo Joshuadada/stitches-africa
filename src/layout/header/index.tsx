@@ -2,10 +2,12 @@
 
 import { useState } from "react"
 import { Search, Heart, ShoppingCart, Menu, X } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchValue, setSearchValue] = useState("")
+  const router = useRouter()
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 font-sans">
@@ -45,8 +47,8 @@ const Header = () => {
         {/* CTA Buttons */}
         <div className="hidden xl:flex items-center gap-2.5 shrink-0">
           <a
-            href="/become-vendor"
-            className="inline-flex items-center px-5 py-2.5 bg-[#b8924a] hover:bg-[#a07a38] text-white rounded-full text-sm font-semibold whitespace-nowrap transition-all hover:-translate-y-px"
+            onClick={() => router.replace('/vendor/register')}
+            className="inline-flex items-center px-5 py-2.5 bg-[#b8924a] hover:bg-[#a07a38] text-white rounded-full text-sm font-semibold whitespace-nowrap transition-all hover:-translate-y-px cursor-pointer"
           >
             Become a Vendor
           </a>

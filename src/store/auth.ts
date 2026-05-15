@@ -1,9 +1,41 @@
+import { RegisterBusinessDetailsFormData } from "@/schema/auth/vendor-register.schema";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 const env = process.env.NEXT_PUBLIC_ENV;
 
 type UserType = "client" | "vendor" | "admin" | "none";
+
+type VendorOnboardingData = RegisterBusinessDetailsFormData & {
+  additionalFileData?: any;
+  govIdFilesData?: any[];
+  portfolioFilesData?: any[];
+};
+
+// ── 1. Non-persisted file store ───────────────────────────────────────────────
+
+type VendorOnboardingFilesState = {
+  additionalFileData: File | null;
+  govIdFiles: File[];
+  portfolioFiles: File[];
+  setAdditionalFileData: (file: File | null) => void;
+  setGovIdFiles: (files: File[]) => void;
+  setPortfolioFiles: (files: File[]) => void;
+  clearVendorOnboardingFiles: () => void;
+};
+
+export const useVendorOnboardingFilesStore = create<VendorOnboardingFilesState>((set) => ({
+  additionalFileData: null,
+  govIdFiles: [],
+  portfolioFiles: [],
+  setAdditionalFileData: (file) => set({ additionalFileData: file }),
+  setGovIdFiles: (files) => set({ govIdFiles: files }),
+  setPortfolioFiles: (files) => set({ portfolioFiles: files }),
+  clearVendorOnboardingFiles: () =>
+    set({ additionalFileData: null, govIdFiles: [], portfolioFiles: [] }),
+}));
+
+// ── 2. Persisted auth store (files completely removed) ────────────────────────
 
 type AuthState = {
   authEmail: string;
@@ -16,10 +48,17 @@ type AuthState = {
   setUserType: (userType: UserType) => void;
   userId: string;
   setUserId: (userId: string) => void;
-  vendorOnboardingData: any | null;
-  setVendorOnboardingData: (vendorOnboardingData: any) => void;
+  vendorOnboardingData: VendorOnboardingData | null;
+  setVendorOnboardingData: (vendorOnboardingData: VendorOnboardingData) => void;
+  clearVendorOnboardingData: () => void;
   user: any | null;
   setUser: (user: any) => void;
+  registrationId: string;
+  setRegistrationId: (registrationId: string) => void;
+  vendorRegisterEmail: string;
+  setVendorRegisterEmail: (vendorRegisterEmail: string) => void;
+  vendorRegisterPhone: string;
+  setVendorRegisterPhone: (vendorRegisterPhone: string) => void;
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -42,21 +81,40 @@ export const useAuthStore = create<AuthState>()(
 
       vendorOnboardingData: null,
       setVendorOnboardingData: (vendorOnboardingData) =>
-        set({ vendorOnboardingData }),
+        set((state) => ({
+          vendorOnboardingData: {
+            ...state.vendorOnboardingData,
+            ...vendorOnboardingData,
+          },
+        })),
+      clearVendorOnboardingData: () => {
+        set({
+          vendorOnboardingData: null
+        })
+      },
 
       user: null,
       setUser: (user) => set({ user }),
+
+      registrationId: "",
+      setRegistrationId: (registrationId) => set({ registrationId }),
+
+      vendorRegisterEmail: "",
+      setVendorRegisterEmail: (vendorRegisterEmail) => set({ vendorRegisterEmail }),
+
+      vendorRegisterPhone: "",
+      setVendorRegisterPhone: (vendorRegisterPhone) => set({ vendorRegisterPhone }),
     }),
     {
       name: `${env}-auth-data`,
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         user: state.user,
-        vendorOnboardingData: state.vendorOnboardingData,
         authEmail: state.authEmail,
         authToken: state.authToken,
         userType: state.userType,
         userId: state.userId,
+        vendorOnboardingData: state.vendorOnboardingData,
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated();

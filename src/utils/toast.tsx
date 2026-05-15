@@ -1,6 +1,5 @@
-import React from "react";
+import Toast from "@/shared/components/toast";
 import toast from "react-hot-toast";
-// import Toast from "src/components/shared/toast";
 
 type ToastType = "success" | "error";
 
@@ -39,5 +38,8 @@ export const showToast = ({
     ...options,
   };
 
-  return toast
+  return toast.custom(
+    (t) => <Toast type={type} title={title} message={message} id={t.id} />,
+    defaultOptions,
+  );
 };

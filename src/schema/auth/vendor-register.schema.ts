@@ -1,6 +1,23 @@
 // schema.ts
 import { z } from "zod";
 
+export const registerStartSchema = z
+    .object({
+        email: z
+            .string()
+            .min(1, "Email is required")
+            .email("Please enter a valid email address"),
+
+        phoneNumber: z
+            .string()
+            .regex(
+                /^(0\d{10}|\+234\d{10})$/,
+                "Enter a valid phone number"
+            ),
+    })
+
+export type RegisterStartFormData = z.infer<typeof registerStartSchema>;
+
 export const registerBusinessDetailsSchema = z.object({
     businessName: z
         .string()
@@ -37,10 +54,15 @@ export const registerBusinessDetailsSchema = z.object({
         .array(z.string().min(1))
         .min(1, "Select at least one business category"),
 
-    contactName: z
+    firstName: z
         .string()
-        .min(2, "Contact name must be at least 2 characters")
-        .max(100, "Contact name must be less than 100 characters"),
+        .min(2, "First name must be at least 2 characters")
+        .max(100, "First name must be less than 100 characters"),
+
+    lastName: z
+        .string()
+        .min(2, "Last name must be at least 2 characters")
+        .max(100, "Last name must be less than 100 characters"),
 
     businessEmail: z
         .string()
@@ -58,6 +80,18 @@ export const registerBusinessDetailsSchema = z.object({
         .regex(
             /^(0\d{10}|\+234\d{10})$/,
             "Enter a valid WhatsApp number"
+        ),
+
+    password: z
+        .string()
+        .min(8, "Password must be at least 8 characters")
+        .max(100, "Password must be less than 100 characters")
+        .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+        .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+        .regex(/[0-9]/, "Password must contain at least one number")
+        .regex(
+            /[^A-Za-z0-9]/,
+            "Password must contain at least one special character"
         ),
 });
 

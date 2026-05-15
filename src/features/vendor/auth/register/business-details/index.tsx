@@ -8,23 +8,46 @@ import {
 } from "@/schema/auth/vendor-register.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useAuthStore } from "@/store/auth";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const BUSINESS_CATEGORIES = ["Ready to wear", "Made to Order", "Bespoke"] as const;
 
-const RegisterBusinessDetails = () => {
+const VendorBusinessDetailsPage = () => {
+    const { setVendorOnboardingData, vendorOnboardingData, vendorRegisterEmail, vendorRegisterPhone } = useAuthStore()
+    const router = useRouter()
+
     const {
         register,
         handleSubmit,
         watch,
         setValue,
+        reset,
         formState: { errors, isValid, isSubmitting },
     } = useForm<RegisterBusinessDetailsFormData>({
         resolver: zodResolver(registerBusinessDetailsSchema),
         mode: "onChange",
         defaultValues: {
             businessCategory: [],
+            phoneNumber: vendorRegisterPhone,
+            businessEmail: vendorRegisterEmail
         },
     });
+
+    useEffect(() => {
+        if (!vendorRegisterEmail || !vendorRegisterPhone) {
+            router.replace('/vendor/register/start')
+        }
+    }, [vendorRegisterEmail, vendorRegisterPhone, router])
+
+    useEffect(() => {
+        if (vendorOnboardingData) {
+            reset({
+                ...vendorOnboardingData,
+            });
+        }
+    }, [vendorOnboardingData, reset]);
 
     const selectedCategories = watch("businessCategory");
 
@@ -37,7 +60,8 @@ const RegisterBusinessDetails = () => {
     };
 
     const onSubmit = (data: RegisterBusinessDetailsFormData) => {
-        console.log(data);
+        setVendorOnboardingData(data)
+        router.replace('/vendor/register/document-upload')
         // handle submission
     };
 
@@ -167,12 +191,23 @@ const RegisterBusinessDetails = () => {
                     {/* Row 4 */}
                     <div className="xl:col-span-6">
                         <Input
-                            label="Contact Name"
-                            name="contactName"
+                            label="First Name"
+                            name="firstName"
                             type="text"
                             required
                             register={register}
-                            error={errors.contactName}
+                            error={errors.firstName}
+                        />
+                    </div>
+
+                    <div className="xl:col-span-6">
+                        <Input
+                            label="Last Name"
+                            name="lastName"
+                            type="text"
+                            required
+                            register={register}
+                            error={errors.lastName}
                         />
                     </div>
 
@@ -181,6 +216,7 @@ const RegisterBusinessDetails = () => {
                             label="Business Email"
                             name="businessEmail"
                             type="email"
+                            readonly={true}
                             required
                             register={register}
                             error={errors.businessEmail}
@@ -193,6 +229,7 @@ const RegisterBusinessDetails = () => {
                             label="Phone Number"
                             name="phoneNumber"
                             type="tel"
+                            readonly={true}
                             required
                             register={register}
                             error={errors.phoneNumber}
@@ -212,6 +249,17 @@ const RegisterBusinessDetails = () => {
                             Used by admin to reach you about orders
                         </p>
                     </div>
+
+                    <div className="xl:col-span-6">
+                        <Input
+                            label="Password"
+                            name="password"
+                            type="password"
+                            required
+                            register={register}
+                            error={errors.password}
+                        />
+                    </div>
                 </div>
 
                 <div className="flex justify-end">
@@ -224,4 +272,4 @@ const RegisterBusinessDetails = () => {
     );
 };
 
-export default RegisterBusinessDetails;
+export default VendorBusinessDetailsPage;
