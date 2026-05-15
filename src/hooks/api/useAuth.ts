@@ -1,6 +1,7 @@
 import { LoginFormData } from "@/schema/auth/login.schema";
 import { RegisterBusinessDetailsFormData, RegisterStartFormData } from "@/schema/auth/vendor-register.schema";
 import { post } from "@/services/api";
+import { isApiError, type ApiError } from "@/services/api";
 import { useAuthStore } from "@/store/auth";
 import { ApiResponse } from "@/types/auth";
 import { showToast } from "@/utils/toast";
@@ -13,16 +14,15 @@ type VendorOnboardingData = RegisterBusinessDetailsFormData & {
     portfolioFilesData: any[];
 };
 
+// ─── Login ────────────────────────────────────────────────────────────────────
+
 export function useVendorLogin(mutationOption: {
     onSuccess: (res: any) => void;
-    onError: (error: any) => void;
+    onError: (error: ApiError) => void;
 }) {
     return useMutation({
         mutationFn: (payload: LoginFormData) =>
-            post<ApiResponse<any>>(
-                "/vendor/auth/login",
-                payload,
-            ),
+            post<ApiResponse<any>>("/vendor/auth/login", payload),
         ...mutationOption,
     });
 }
@@ -46,11 +46,10 @@ export function useSubmitVendorLogin(reset: () => void) {
             router.push("/vendor/home");
             reset();
         },
-        onError: (error: any) => {
-            const message =
-                error?.response?.data?.message ||
-                error.message ||
-                "Something went wrong";
+        onError: (error: unknown) => {
+            const message = isApiError(error)
+                ? error.message
+                : "Something went wrong";
             showToast({
                 type: "error",
                 title: "Login Error",
@@ -59,23 +58,22 @@ export function useSubmitVendorLogin(reset: () => void) {
         },
     });
 
-    const onSubmit = async (data: LoginFormData) => {
+    const onSubmit = (data: LoginFormData) => {
         vendorLogin(data);
     };
 
     return { onSubmit, isPending };
 }
 
+// ─── Register Start ───────────────────────────────────────────────────────────
+
 export function useVendorRegisterStart(mutationOption: {
     onSuccess: (res: any) => void;
-    onError: (error: any) => void;
+    onError: (error: ApiError) => void;
 }) {
     return useMutation({
         mutationFn: (payload: RegisterStartFormData) =>
-            post<ApiResponse<any>>(
-                "/vendor/auth/register",
-                payload,
-            ),
+            post<ApiResponse<any>>("/vendor/auth/register", payload),
         ...mutationOption,
     });
 }
@@ -88,47 +86,42 @@ export function useSubmitVendorRegisterStart(reset: () => void, success?: () => 
         onSuccess: (res) => {
             showToast({
                 type: "success",
-                title: "Login Success",
+                title: "Registration Started",
                 message: res.message,
             });
 
             setRegistrationId(res.data.registrationId);
-            success?.()
+            success?.();
             reset();
         },
-        onError: (error: any) => {
-            const message =
-                error?.response?.data?.message ||
-                error.message ||
-                "Something went wrong";
+        onError: (error: unknown) => {
+            const message = isApiError(error)
+                ? error.message
+                : "Something went wrong";
             showToast({
                 type: "error",
-                title: "Login Error",
+                title: "Registration Error",
                 message,
             });
         },
     });
 
-    const onSubmit = async (data: RegisterStartFormData) => {
+    const onSubmit = (data: RegisterStartFormData) => {
         vendorRegisterStart(data);
     };
 
     return { onSubmit, isPending };
 }
 
+// ─── Confirm OTP ──────────────────────────────────────────────────────────────
+
 export function useVendorConfirmOtp(mutationOption: {
     onSuccess: (res: any) => void;
-    onError: (error: any) => void;
+    onError: (error: ApiError) => void;
 }) {
     return useMutation({
-        mutationFn: (payload: {
-            verificationCode: string;
-            registrationId: string
-        }) =>
-            post<ApiResponse<any>>(
-                "/vendor/auth/verify-email",
-                payload,
-            ),
+        mutationFn: (payload: { verificationCode: string; registrationId: string }) =>
+            post<ApiResponse<any>>("/vendor/auth/verify-email", payload),
         ...mutationOption,
     });
 }
@@ -146,44 +139,37 @@ export function useSubmitVendorConfirmOtp(reset: () => void) {
                 message: res.message,
             });
 
-            router.push('/vendor/register/business-details')
+            router.push("/vendor/register/business-details");
             reset();
         },
-        onError: (error: any) => {
-            const message =
-                error?.response?.data?.message ||
-                error.message ||
-                "Something went wrong";
+        onError: (error: unknown) => {
+            const message = isApiError(error)
+                ? error.message
+                : "Something went wrong";
             showToast({
                 type: "error",
-                title: "Confirm OTP Error",
+                title: "OTP Error",
                 message,
             });
         },
     });
 
-    const onSubmit = async ({ verificationCode }: { verificationCode: string }) => {
-        console.log(registrationId)
-        const payload = {
-            verificationCode,
-            registrationId
-        }
-        vendorConfirmOtp(payload);
+    const onSubmit = ({ verificationCode }: { verificationCode: string }) => {
+        vendorConfirmOtp({ verificationCode, registrationId: registrationId ?? "" });
     };
 
     return { onSubmit, isPending };
 }
 
+// ─── Complete Registration ────────────────────────────────────────────────────
+
 export function useVendorRegister(mutationOption: {
     onSuccess: (res: any) => void;
-    onError: (error: any) => void;
+    onError: (error: ApiError) => void;
 }) {
     return useMutation({
-        mutationFn: (payload: any) =>
-            post<ApiResponse<any>>(
-                "/vendor/auth/complete-registration",
-                payload,
-            ),
+        mutationFn: (payload: FormData) =>
+            post<ApiResponse<any>>("/vendor/auth/complete-registration", payload),
         ...mutationOption,
     });
 }
@@ -202,16 +188,16 @@ export function useSubmitVendorRegister(reset: () => void) {
                 title: "Registration Successful",
                 message: res.message,
             });
+
             setEmail(res.data.email);
             setToken(res.data.token);
             router.push("/vendor/login");
             reset();
         },
-        onError: (error: any) => {
-            const message =
-                error?.response?.data?.message ||
-                error.message ||
-                "Something went wrong";
+        onError: (error: unknown) => {
+            const message = isApiError(error)
+                ? error.message
+                : "Something went wrong";
             showToast({
                 type: "error",
                 title: "Registration Error",
@@ -220,14 +206,18 @@ export function useSubmitVendorRegister(reset: () => void) {
         },
     });
 
-    const onSubmit = (vendorOnboardingData: RegisterBusinessDetailsFormData, fileData: { additionalFile: File | null, portfolioFiles: File[] | null, govIdFiles: File[] | null }) => {
+    const onSubmit = (
+        vendorOnboardingData: RegisterBusinessDetailsFormData,
+        fileData: {
+            additionalFile: File | null;
+            portfolioFiles: File[] | null;
+            govIdFiles: File[] | null;
+        }
+    ) => {
         const {
-            // Step 1 — personal info (from initial registration step)
             firstName,
             lastName,
             password,
-
-            // Step 2 — business details
             businessName,
             cacRegistrationNumber,
             physicalBusinessAddress,
@@ -235,14 +225,13 @@ export function useSubmitVendorRegister(reset: () => void) {
             businessEmail,
             phoneNumber,
             businessCategory,
-            whatsappNumber
+            whatsappNumber,
         } = vendorOnboardingData;
 
-        const { additionalFile, govIdFiles, portfolioFiles } = fileData
+        const { additionalFile, govIdFiles, portfolioFiles } = fileData;
 
         const formData = new FormData();
 
-        // Text fields — match API keys exactly from the screenshot
         formData.append("registrationId", registrationId ?? "");
         formData.append("firstName", firstName ?? "");
         formData.append("lastName", lastName ?? "");
@@ -255,21 +244,19 @@ export function useSubmitVendorRegister(reset: () => void) {
         formData.append("contactPhone", phoneNumber || "");
         formData.append("contactWhatsapp", whatsappNumber || "");
 
-        // productCategories sent as repeated keys (not JSON array)
-        businessCategory?.forEach((cat: any) => {
+        businessCategory?.forEach((cat: string) => {
             formData.append("productCategories", cat);
         });
 
-        // File fields
         if (additionalFile) {
             formData.append("cacCertificate", additionalFile);
         }
 
-        govIdFiles?.forEach((file: any) => {
+        govIdFiles?.forEach((file: File) => {
             formData.append("governmentIssuedId", file);
         });
 
-        portfolioFiles?.forEach((file: any) => {
+        portfolioFiles?.forEach((file: File) => {
             formData.append("productPortfolio", file);
         });
 
