@@ -8,14 +8,6 @@ import { showToast } from "@/utils/toast";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
-type VendorOnboardingData = RegisterBusinessDetailsFormData & {
-    additionalFileData: any;
-    govIdFilesData: any[];
-    portfolioFilesData: any[];
-};
-
-// ─── Login ────────────────────────────────────────────────────────────────────
-
 export function useVendorLogin(mutationOption: {
     onSuccess: (res: any) => void;
     onError: (error: ApiError) => void;

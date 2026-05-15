@@ -121,7 +121,7 @@ const Header = () => {
 
         {/* Mobile CTAs */}
         <div className="flex flex-col gap-2.5 pb-1">
-          <a href="/become-vendor" className="flex justify-center px-5 py-3 bg-[#b8924a] hover:bg-[#a07a38] text-white rounded-full text-sm font-semibold transition-colors">
+          <a onClick={() => router.replace('/vendor/register')} className="flex justify-center px-5 py-3 bg-[#b8924a] hover:bg-[#a07a38] text-white rounded-full text-sm font-semibold transition-colors">
             Become a Vendor
           </a>
           <a href="/login" className="flex justify-center px-5 py-3 bg-black hover:bg-gray-800 text-white rounded-full text-sm font-semibold transition-colors">
