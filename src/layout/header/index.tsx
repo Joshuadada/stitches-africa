@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Search, Heart, ShoppingCart, Menu, X } from "lucide-react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -11,13 +12,10 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 font-sans">
-      <div className="flex items-center gap-6 h-[68] px-8 sm:px-16 md:px-32 lg:px-44 mx-auto">
+      <div className="flex items-center gap-6 px-6 sm:px-8 md:px-10 lg:px-14 mx-auto">
 
         {/* Logo */}
-        <a href="/" className="flex items-baseline gap-0.5 text-black no-underline shrink-0">
-          <span className="text-[22px] font-extrabold tracking-tight">SA</span>
-          <span className="text-[22px] font-extrabold">•</span>
-        </a>
+        <Image src={"/svgs/sa-logo-2.svg"} alt="logo" height={89} width={89} onClick={() => router.replace('/')} />
 
         {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-1 shrink-0">

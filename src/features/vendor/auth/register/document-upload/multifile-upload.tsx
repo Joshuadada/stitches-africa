@@ -11,31 +11,50 @@ interface TrackedFile {
   errorMessage?: string;
 }
 
+// New props shape
 interface MultiFileUploadProps {
     files: TrackedFile[];
-    onAdd: (files: FileList) => void;
+    onAdd: (valid: File[], failed: Array<{ file: File; errorMessage: string }>) => void;
     onRemove: (id: string) => void;
 }
+
+const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
 export const MultiFileUpload = ({ files, onAdd, onRemove }: MultiFileUploadProps) => {
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const handleDrop = useCallback(
-        (e: React.DragEvent) => {
-            e.preventDefault();
-            if (e.dataTransfer.files.length) onAdd(e.dataTransfer.files);
+    const processFiles = useCallback(
+        (fileList: FileList) => {
+            const valid: File[] = [];
+            const failed: Array<{ file: File; errorMessage: string }> = [];
+
+            Array.from(fileList).forEach((file) => {
+                if (file.size > MAX_SIZE) {
+                    failed.push({ file, errorMessage: "File exceeds the 10MB size limit" });
+                } else {
+                    valid.push(file);
+                }
+            });
+
+            onAdd(valid, failed);
         },
         [onAdd]
     );
 
+    const handleDrop = useCallback(
+        (e: React.DragEvent) => {
+            e.preventDefault();
+            if (e.dataTransfer.files.length) processFiles(e.dataTransfer.files);
+        },
+        [processFiles]
+    );
+
     return (
         <div className="flex flex-col gap-2 sm:gap-3 md:gap-4 lg:gap-5">
-            {/* Existing file rows */}
             {files.map((tracked) => (
                 <FileRow key={tracked.id} tracked={tracked} onRemove={onRemove} />
             ))}
 
-            {/* Add more / initial drop zone */}
             <div
                 onDrop={handleDrop}
                 onDragOver={(e) => e.preventDefault()}
@@ -58,8 +77,8 @@ export const MultiFileUpload = ({ files, onAdd, onRemove }: MultiFileUploadProps
                 className="hidden"
                 onChange={(e) => {
                     if (e.target.files?.length) {
-                        onAdd(e.target.files);
-                        e.target.value = ""; // reset so same file can be re-added after remove
+                        processFiles(e.target.files);
+                        e.target.value = "";
                     }
                 }}
             />

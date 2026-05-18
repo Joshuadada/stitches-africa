@@ -166,11 +166,8 @@ export function useVendorRegister(mutationOption: {
     });
 }
 
-export function useSubmitVendorRegister(reset: () => void) {
-    const router = useRouter();
+export function useSubmitVendorRegister(reset: (vendorId: string) => void) {
     const state = useAuthStore((state) => state);
-    const setEmail = state.setAuthEmail;
-    const setToken = state.setAuthToken;
     const registrationId = state.registrationId;
 
     const { mutate: vendorRegister, isPending } = useVendorRegister({
@@ -180,11 +177,7 @@ export function useSubmitVendorRegister(reset: () => void) {
                 title: "Registration Successful",
                 message: res.message,
             });
-
-            setEmail(res.data.email);
-            setToken(res.data.token);
-            router.push("/vendor/login");
-            reset();
+            reset(res.data.vendorId);
         },
         onError: (error: unknown) => {
             const message = isApiError(error)

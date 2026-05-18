@@ -45,10 +45,9 @@ export const registerBusinessDetailsSchema = z.object({
         .min(1, "State is required"),
 
     yearsInOperation: z
-        .number()
-        .int("Must be a whole number")
-        .min(0, "Cannot be negative")
-        .max(200, "Please enter a valid number of years"),
+        .string()
+        .regex(/^\d+$/, "Must be a whole number")
+        .refine((val) => parseInt(val) <= 200, "Please enter a valid number of years"),
 
     businessCategory: z
         .array(z.string().min(1))
@@ -93,6 +92,22 @@ export const registerBusinessDetailsSchema = z.object({
             /[^A-Za-z0-9]/,
             "Password must contain at least one special character"
         ),
+
+    confirmPassword: z
+        .string()
+        .min(8, "Password must be at least 8 characters")
+        .max(100, "Password must be less than 100 characters")
+        .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+        .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+        .regex(/[0-9]/, "Password must contain at least one number")
+        .regex(
+            /[^A-Za-z0-9]/,
+            "Password must contain at least one special character"
+        ),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
 });
+
 
 export type RegisterBusinessDetailsFormData = z.infer<typeof registerBusinessDetailsSchema>;

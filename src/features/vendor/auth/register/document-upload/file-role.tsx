@@ -55,7 +55,7 @@ export const FileRow = ({
                     {isSuccess ? (
                         <>
                             <Image src={"/svgs/success-icon.svg"} alt="success icon" height={16} width={16} />
-                            <span className="text-[8px] md:text-[10px] lg:text-xs text-[#1D9E75]font-bold">Uploaded</span>
+                            <span className="text-[8px] md:text-[10px] lg:text-xs text-[#1D9E75] font-bold">Uploaded</span>
                         </>
                     ) : (
                         <>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import OTPInput from "react-otp-input";
 import { Check } from "lucide-react";
-import Button from "../button";
+import Button from "../../components/button";
 import Image from "next/image";
 
 type EmailOtpModalProps = {

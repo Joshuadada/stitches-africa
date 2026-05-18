@@ -13,7 +13,7 @@ import {
     registerStartSchema
 } from '@/schema/auth/vendor-register.schema';
 
-import EmailOtpModal from "@/shared/components/email-otp-modal";
+import EmailOtpModal from "@/shared/modals/email-otp-modal";
 import { useAuthStore } from "@/store/auth";
 import { useRouter } from "next/navigation";
 

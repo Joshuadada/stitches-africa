@@ -144,10 +144,9 @@ const VendorBusinessDetailsPage = () => {
                         <Input
                             label="Years in Operation"
                             name="yearsInOperation"
-                            type="string"
+                            type="text"
                             required
                             register={register}
-                            registerOptions={{ valueAsNumber: true }}
                             error={errors.yearsInOperation}
                         />
                     </div>
@@ -258,6 +257,17 @@ const VendorBusinessDetailsPage = () => {
                             required
                             register={register}
                             error={errors.password}
+                        />
+                    </div>
+
+                    <div className="xl:col-span-6">
+                        <Input
+                            label="Confirm Password"
+                            name="confirmPassword"
+                            type="password"
+                            required
+                            register={register}
+                            error={errors.confirmPassword}
                         />
                     </div>
                 </div>
