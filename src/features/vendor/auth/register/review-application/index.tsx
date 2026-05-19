@@ -30,6 +30,10 @@ const ReviewApplication = () => {
 
     const handleBack = () => router.push("/vendor/register/document-upload")
 
+    const bytesToMb = (bytes: number, decimals = 2): string => {
+        return `${(bytes / (1024 * 1024)).toFixed(decimals)} MB`;
+    };
+
     const handleSubmit = () => {
         if (!confirmed || !vendorOnboardingData) return
         onSubmit(vendorOnboardingData, { additionalFile, portfolioFiles, govIdFiles })
@@ -126,12 +130,14 @@ const ReviewApplication = () => {
                         <div className='px-2.5 sm:px-3.5 md:px-4.5 lg:px-5.5'>
                             <div className='flex items-center gap-2 border-b border-[#C8C0B5] py-1.5 sm:py-2.5 md:py-3.5 lg:py-4.5'>
                                 <h5 className='w-[196] text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm'>Business Document</h5>
+                                <div>
                                 <div className='flex-1 flex items-center gap-2.5 sm:gap-3.5 md:gap-4.5 lg:gap-5.5'>
                                     <div className={`w-5 sm:w-6 md:w-7 lg:w-9 h-5 sm:h-6 md:h-7 lg:h-9 rounded bg-black`}></div>
-                                    <div className='flex items-end gap-3'>
+                                    <div className='flex flex-1 items-end gap-3'>
                                         <p className='text-black font-bold text-[8px] sm:text-[10px] md:text-xs lg:text-sm'>{additionalFileData?.name}</p>
-                                        <p className='text-[#737373] text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs'>{additionalFileData?.size} </p>
+                                        <p className='text-[#737373] text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs'>{bytesToMb(additionalFileData?.size)} </p>
                                     </div>
+                                </div>
                                 </div>
                             </div>
 
@@ -142,9 +148,9 @@ const ReviewApplication = () => {
                                         ((govIdFilesData || []) as any[]).map((govId, index) => (
                                             <div key={govId.name + index} className='flex-1 flex items-center gap-2.5 sm:gap-3.5 md:gap-4.5 lg:gap-5.5'>
                                                 <div className={`w-5 sm:w-6 md:w-7 lg:w-9 h-5 sm:h-6 md:h-7 lg:h-9 rounded bg-black`}></div>
-                                                <div className='flex items-end gap-3'>
+                                                <div className='flex flex-1 items-end gap-3'>
                                                     <p className='text-black font-bold text-[8px] sm:text-[10px] md:text-xs lg:text-sm'>{govId?.name}</p>
-                                                    <p className='text-[#737373] text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs'>{govId?.size}</p>
+                                                    <p className='text-[#737373] text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs'>{bytesToMb(govId?.size)}</p>
                                                 </div>
                                             </div>
                                         ))
@@ -159,9 +165,9 @@ const ReviewApplication = () => {
                                         ((portfolioFilesData || []) as any[]).map((portfolio, index) => (
                                             <div key={portfolio.name + index} className='flex-1 flex items-center gap-2.5 sm:gap-3.5 md:gap-4.5 lg:gap-5.5'>
                                                 <div className={`w-5 sm:w-6 md:w-7 lg:w-9 h-5 sm:h-6 md:h-7 lg:h-9 rounded bg-black`}></div>
-                                                <div className='flex items-end gap-3'>
+                                                <div className='flex flex-1 items-end gap-3'>
                                                     <p className='text-black font-bold text-[8px] sm:text-[10px] md:text-xs lg:text-sm'>{portfolio?.name}</p>
-                                                    <p className='text-[#737373] text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs'>{portfolio?.size}</p>
+                                                    <p className='text-[#737373] text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs'>{bytesToMb(portfolio?.size || 0)}</p>
                                                 </div>
                                             </div>
                                         ))
@@ -205,7 +211,7 @@ const ReviewApplication = () => {
             {/* Submitted Modal */}
             {openSubmittedModal && (
                 <ApplicationSubmittedModal
-                    vendorName={`${firstName} ${lastName}`}
+                    vendorName={businessName || ""}
                     applicationReference={vendorId}
                     onClose={() => {
                         setOpenSubmittedModal(false);

@@ -73,8 +73,7 @@ const ApplicationSubmittedModal = ({
                             <Image src={"/svgs/envelope-icon.svg"} alt='envelope icon' height={8} width={10} className='mt-1' />
 
                             <p className="text-[8px] md:text-[10px] lg::text-xs text-[#6A5D4D] font-medium">
-                                Our team will review your application and email
-                                within{" "}
+                            Our team will review your application and email with a response in{" "}
                                 <span className="font-bold text-[#171717]">
                                     3–5 working days
                                 </span>.
