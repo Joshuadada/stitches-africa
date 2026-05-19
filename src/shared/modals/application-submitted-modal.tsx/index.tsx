@@ -48,7 +48,7 @@ const ApplicationSubmittedModal = ({
                     </p>
 
                     {/* Reference */}
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-4 sm:mb-6 md:mb-8 lg:mb-10">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-1 mb-4 sm:mb-6 md:mb-8 lg:mb-10">
                         <p className="text-[#B5894A] text-[8px] sm:text-[10px] md:text-xs lg:text-sm">
                             Application reference:
                         </p>
