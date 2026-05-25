@@ -10,6 +10,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useSubmitVendorLogin } from "@/hooks/api/useAuth";
+import { GoogleLogin, GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
+import { useSubmitVendorSocialLogin } from "@/hooks/api/useAuth";
+import { useRef, useState } from "react";
+import Image from 'next/image';
+
+declare global {
+    interface Window {
+        fbAsyncInit: any;
+        FB: any;
+    }
+}
 
 const Right = () => {
     const {
@@ -24,6 +35,11 @@ const Right = () => {
 
     const { onSubmit, isPending } =
         useSubmitVendorLogin(reset);
+    const { onSubmit: onSocialSubmit, isPending: isSocialPending } = useSubmitVendorSocialLogin();
+    const [socialError, setSocialError] = useState<string | null>(null);
+    const [socialLoading, setSocialLoading] = useState<'google' | 'facebook' | null>(null);
+
+    const googleButtonRef = useRef<HTMLDivElement>(null);
 
     return (
         <div className="pt-8 sm:pt-10 md:pt-12 lg:pt-14 pb-5 sm:pb-6 md:pb-7 lg:pb-8 px-8 sm:px-16 md:px-24 lg:px-36 h-full overflow-y-auto bg-[#FAF7F2]">
@@ -46,6 +62,103 @@ const Right = () => {
                 onSubmit={handleSubmit(onSubmit)}
                 className="w-full mb-5 sm:mb-6 md:mb-7 lg:mb-9"
             >
+                {/* Social logins */}
+                <div className="flex flex-col gap-4 mb-5 sm:mb-6 md:mb-7 lg:mb-9">
+                    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+                        {/* Hidden Google button */}
+                        <div className="hidden">
+                            <div ref={googleButtonRef}>
+                                <GoogleLogin
+                                    onSuccess={(credentialResponse) => {
+                                        setSocialError(null);
+                                        const idToken = credentialResponse.credential;
+                                        if (idToken) onSocialSubmit("google", idToken);
+                                        else setSocialError("Google login failed");
+                                    }}
+                                    onError={() => setSocialError("Google login failed")}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Your original custom button */}
+                        <Button
+                            onClick={() => {
+                                setSocialLoading('google');
+                                // Find and click the hidden Google button
+                                googleButtonRef.current?.querySelector('div[role="button"]')?.dispatchEvent(
+                                    new MouseEvent('click', { bubbles: true, cancelable: true })
+                                );
+                            }}
+                            className='border border-[#E8E8E8]'
+                            loading={isSocialPending && socialLoading === 'google'}
+                        >
+                            <div className='flex items-center gap-2'>
+                                <Image src="/svgs/google-icon.svg" alt="google" width={26} height={26} />
+                                <span className='font-semibold text-[10px] sm:text-xs lg:text-sm text-[#262626]'>
+                                    Continue with Google
+                                </span>
+                            </div>
+                        </Button>
+                    </GoogleOAuthProvider>
+
+                    <div className="flex justify-center">
+                        <Button
+                            onClick={async () => {
+                                setSocialLoading('facebook');
+                                setSocialError(null);
+
+                                if (!window.FB) {
+                                    window.fbAsyncInit = function () {
+                                        window.FB.init({
+                                            appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "",
+                                            cookie: true,
+                                            xfbml: false,
+                                            version: "v17.0",
+                                        });
+                                    };
+
+                                    const d = document;
+                                    const s = "script";
+                                    const id = "facebook-jssdk";
+                                    if (!d.getElementById(id)) {
+                                        const js = d.createElement(s) as HTMLScriptElement;
+                                        js.id = id;
+                                        js.src = "https://connect.facebook.net/en_US/sdk.js";
+                                        d.body.appendChild(js);
+                                        await new Promise((resolve) => {
+                                            js.onload = resolve;
+                                            js.onerror = () => resolve(undefined);
+                                        });
+                                    }
+                                }
+
+                                if (!window.FB) {
+                                    setSocialError("Could not load Facebook SDK");
+                                    return;
+                                }
+
+                                window.FB.login((response: any) => {
+                                    if (response?.status === "connected") {
+                                        const accessToken = response.authResponse?.accessToken;
+                                        if (accessToken) onSocialSubmit("facebook", accessToken);
+                                        else setSocialError("No access token received from Facebook");
+                                    } else {
+                                        setSocialError("Facebook login failed or cancelled");
+                                    }
+                                }, { scope: "email,public_profile" });
+                            }}
+                            className="bg-[#1877F2] text-white"
+                            loading={isSocialPending && socialLoading === 'facebook'}
+                        >
+                            <div className='flex items-center gap-2'>
+                                <Image src="/svgs/facebook-icon.svg" alt="facebook" width={20} height={20} />
+                                <span className='font-semibold text-[10px] sm:text-xs lg:text-sm text-white'>Continue with Facebook</span>
+                            </div>
+                        </Button>
+                    </div>
+
+                    {socialError && <p className="text-red-600 text-sm">{socialError}</p>}
+                </div>
                 <div className="flex flex-col gap-6 sm:gap-7 md:gap-8 lg:gap-9">
                     <Input
                         label="Business Email Address"

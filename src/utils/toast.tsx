@@ -1,3 +1,5 @@
+"use client";
+
 import Toast from "@/shared/components/toast";
 import toast from "react-hot-toast";
 

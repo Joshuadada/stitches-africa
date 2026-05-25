@@ -57,6 +57,48 @@ export function useSubmitVendorLogin(reset: () => void) {
     return { onSubmit, isPending };
 }
 
+// ─── Vendor Social Login (Google / Facebook) ───────────────────────────────
+
+export function useVendorSocialLogin(mutationOption: {
+    onSuccess: (res: any) => void;
+    onError: (error: ApiError) => void;
+}) {
+    return useMutation({
+        mutationFn: (payload: { provider: string; token: string; role?: string }) =>
+            post<ApiResponse<any>>("/identity/api/auth/social-login", payload),
+        ...mutationOption,
+    });
+}
+
+export function useSubmitVendorSocialLogin() {
+    const router = useRouter();
+    const state = useAuthStore((state) => state);
+    const setEmail = state.setAuthEmail;
+    const setToken = state.setAuthToken;
+    const setUser = state.setUser;
+
+    const { mutate: socialLogin, isPending } = useVendorSocialLogin({
+        onSuccess: (res) => {
+            showToast({ type: "success", title: "Login Success", message: res.message });
+
+            setEmail(res.data.email);
+            setToken(res.data.token);
+            setUser(res.data);
+            router.push("/vendor/home");
+        },
+        onError: (error: unknown) => {
+            const message = isApiError(error) ? error.message : "Something went wrong";
+            showToast({ type: "error", title: "Login Error", message });
+        },
+    });
+
+    const onSubmit = (provider: string, token: string) => {
+        socialLogin({ provider, token, role: "Vendor" });
+    };
+
+    return { onSubmit, isPending };
+}
+
 // ─── Register Start ───────────────────────────────────────────────────────────
 
 export function useVendorRegisterStart(mutationOption: {
