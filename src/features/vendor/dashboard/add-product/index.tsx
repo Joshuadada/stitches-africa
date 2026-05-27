@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -11,6 +11,7 @@ import CategorySelector from "./category-selector";
 import PriceSummary from "./prices-summary";
 import ProductImages from "./product-images";
 import SizesAndStock from "./sizes-and-stock";
+import { useVendorHeaderStore } from "@/store/vendor-header";
 
 
 
@@ -22,6 +23,13 @@ const createSizeDefaults = (sizes: string[], value: boolean | number) =>
 
 const AddProduct = () => {
     const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0]);
+    const { setVendorHeader } = useVendorHeaderStore()
+
+    useEffect(() => {
+        setVendorHeader({
+            title: "Add New Product"
+          })
+    }, [])
 
     const [selectedSizes, setSelectedSizes] = useState<Record<string, boolean>>(
         createSizeDefaults(SIZES, false) as Record<string, boolean>

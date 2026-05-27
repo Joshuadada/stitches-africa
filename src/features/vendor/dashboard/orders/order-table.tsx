@@ -3,7 +3,7 @@ import { Order } from "."
 const OrderTable = ({ orders }: { orders: Order[] }) => {
     return (
         <div className="overflow-x-auto">
-            <table className="w-full min-w-[850]">
+            <table className="w-full">
                 <thead className="rounded-t-lg sm:rounded-t-xl md:rounded-t-2xl lg:rounded-t-[20px]">
                     <tr className="bg-[#B5894A1A] border-b border-[#E7DED2]">
                         <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal pl-6 lg:pl-8 py-2 sm:py-4 md:py-6 lg:py-8 rounded-tl-lg sm:rounded-tl-xl md:rounded-tl-2xl lg:rounded-tl-[20px]">

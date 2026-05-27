@@ -16,7 +16,7 @@ const Tabs = ({ tabs, activeTab, setActiveTab }: Props) => {
     // const [activeTab, setActiveTab] = useState("all")
 
     return (
-        <div className="border-b border-[#73655133] overflow-x-auto">
+        <div className="border-b border-[#73655133] overflow-x-auto max-w-full">
             <div className="flex items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 min-w-max">
                 {tabs.map((tab, index) => {
                     const isActive = activeTab === tab.value

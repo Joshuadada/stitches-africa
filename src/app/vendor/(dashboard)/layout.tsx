@@ -15,18 +15,19 @@ export default function VendorAuthLayout({
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         routes={[
-          { href: '/vendor/home', label: 'Dashboard', icon: <></> },
-          { href: '/vendor/products', label: 'Products', icon: <></> },
-          { href: '/vendor/add-product', label: 'Add Product', icon: <></> },
-          { href: '/vendor/orders', label: 'Orders', icon: <></> },
-          { href: '/vendor/payouts', label: 'Payouts', icon: <></> },
-          { href: '/vendor/reviews', label: 'Reviews', icon: <></> },
-          { href: '/vendor/settings', label: 'Store Settings', icon: <></> },
+          { href: '/vendor/home', label: 'Dashboard', icon: "/svgs/dasboard/dashboard-icon.svg" },
+          { href: '/vendor/products', label: 'Products', icon: "/svgs/dasboard/products-icon.svg" },
+          { href: '/vendor/add-product', label: 'Add Product', icon: "/svgs/dasboard/products-icon.svg" },
+          { href: '/vendor/orders', label: 'Orders', icon: "/svgs/dasboard/order-icon.svg" },
+          { href: '/vendor/payouts', label: 'Payouts', icon: "/svgs/dasboard/payout-icon.svg" },
+          { href: '/vendor/reviews', label: 'Reviews', icon: "/svgs/dasboard/review-icon.svg" },
+          { href: '/vendor/store-settings', label: 'Store Settings', icon: "/svgs/dasboard/store-settings-icon.svg" },
+          { href: "/vendor/auto-import", label: "Auto-Import", icon: "/svgs/dasboard/import-icon.svg" },
         ] as RouteItem[]}
       />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 min-w-0 flex flex-col">
         <VendorHeader onToggleSidebar={() => setSidebarOpen((s) => !s)} />
-        <main className="flex-1 overflow-y-auto p-7 sm:p-9 md:p-11 lg:p-13">{children}</main>
+        <main className="flex-1 min-w-0 overflow-y-auto p-7 sm:p-9 md:p-11 lg:p-13">{children}</main>
       </div>
     </div>
   );

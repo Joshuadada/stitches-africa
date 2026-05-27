@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import ProductTable from "./product-table"
 import Tabs from "@/shared/components/tabs"
+import { useVendorHeaderStore } from "@/store/vendor-header"
 
 const tabs = [
     {
@@ -84,6 +85,13 @@ export type Product = {
 
 const Products = () => {
     const [activeTab, setActiveTab] = useState("all")
+    const { setVendorHeader } = useVendorHeaderStore()
+
+    useEffect(() => {
+        setVendorHeader({
+            title: "Product Management"
+        })
+    }, [])
 
     const filteredProducts =
         activeTab === "all"

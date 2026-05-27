@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import OrderTable from "./order-table"
 import Tabs from "@/shared/components/tabs"
+import { useVendorHeaderStore } from "@/store/vendor-header"
 
 const tabs = [
     {
@@ -116,6 +117,13 @@ export type Order = {
 
 const Orders = () => {
     const [activeTab, setActiveTab] = useState("new")
+    const { setVendorHeader } = useVendorHeaderStore()
+
+    useEffect(() => {
+        setVendorHeader({
+            title: "Order Management"
+          })
+    }, [])
 
     const filteredOrders = orders.filter(
         (order) => order.category === activeTab

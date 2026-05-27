@@ -9,18 +9,18 @@ import Image from "next/image";
 type RouteItem = {
   href: string;
   label: string;
-  icon?: React.ReactNode;
+  icon?: string;
 };
 
 const defaultRoutes: RouteItem[] = [
-  { href: "/vendor/home", label: "Dashboard", icon: <Home size={16} /> },
-  { href: "/vendor/products", label: "Products", icon: <Package size={16} /> },
-  { href: "/vendor/add-product", label: "Add Product", icon: <PlusCircle size={16} /> },
-  { href: "/vendor/orders", label: "Orders", icon: <ShoppingBag size={16} /> },
-  { href: "/vendor/payouts", label: "Payouts", icon: <CreditCard size={16} /> },
-  { href: "/vendor/reviews", label: "Reviews", icon: <Star size={16} /> },
-  { href: "/vendor/settings", label: "Store Settings", icon: <Settings size={16} /> },
-  { href: "/vendor/auto-import", label: "Auto-Import", icon: <Download size={16} /> },
+  { href: "/vendor/home", label: "Dashboard", icon: "/svgs/home.svg" },
+  { href: "/vendor/products", label: "Products", icon: "/svgs/package.svg" },
+  { href: "/vendor/add-product", label: "Add Product", icon: "/svgs/plus-circle.svg" },
+  { href: "/vendor/orders", label: "Orders", icon: "/svgs/shopping-bag.svg" },
+  { href: "/vendor/payouts", label: "Payouts", icon: "/svgs/credit-card.svg" },
+  { href: "/vendor/reviews", label: "Reviews", icon: "/svgs/star.svg" },
+  { href: '/vendor/store-settings', label: 'Store Settings', icon: "/svgs/dasboard/store-settings-icon.svg" },
+  { href: "/vendor/auto-import", label: "Auto-Import", icon: "/svgs/dasboard/import-icon.svg" },
 ];
 
 const Sidebar = ({ routes, open, onClose }: { routes?: RouteItem[]; open?: boolean; onClose?: () => void }) => {
@@ -44,7 +44,7 @@ const Sidebar = ({ routes, open, onClose }: { routes?: RouteItem[]; open?: boole
       />
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 transform transition-transform w-74 lg:static lg:translate-x-0 xl:w-74 bg-[#292524] text-[#efe7db] flex flex-col justify-between py-3.5 sm:py-4.5 md:py-5.5 lg:py-6.5 ${open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        className={`fixed inset-y-0 left-0 z-50 transform transition-transform w-74 lg:static lg:translate-x-0 xl:w-74 bg-[#292524] text-[#efe7db] flex flex-col justify-between py-3.5 sm:py-4.5 md:py-5.5 lg:py-6.5 overflow-y-auto ${open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           }`}
       >
         <div>
@@ -70,7 +70,15 @@ const Sidebar = ({ routes, open, onClose }: { routes?: RouteItem[]; open?: boole
                   className={`flex items-center gap-3  px-3 sm:px-5 md:px-7 lg:px-9 py-3 sm:py-4 md:py-4.5 lg:py-5 transition-colors text-[#C8C0B5] font-medium ${active ? 'bg-[#B5894A33] text-white font-bold!' : 'hover:bg-white/5'
                     }`}
                 >
-                  <span className="w-6 h-6 flex items-center justify-center text-inherit">{item.icon ?? <Home size={16} />}</span>
+                  <span className="w-6 h-6 flex items-center justify-center">
+                    <Image
+                      src={item.icon || "/svgs/dashboard/dashboard-icon.svg"}
+                      alt={item.label}
+                      width={24}
+                      height={24}
+                      className={active ? "opacity-100" : "opacity-70"}
+                    />
+                  </span>
                   <span className="text-xs md:text-sm lg:text-base">{item.label}</span>
                 </Link>
               );
@@ -78,7 +86,7 @@ const Sidebar = ({ routes, open, onClose }: { routes?: RouteItem[]; open?: boole
           </nav>
         </div>
 
-        <div className="">
+        <div className="mt-3">
           <button
             onClick={() => router.replace("/")}
             className="px-3 sm:px-5 md:px-7 lg:px-9 rounded-md hover:bg-white/5 flex items-center gap-3 sm:gap-3.5 md:gap-4 lg:gap-4.5 py-3 sm:py-4 md:py-4.5 lg:py-5 w-full cursor-pointer"
