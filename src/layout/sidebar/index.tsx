@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import React from "react";
 import { Home, Package, PlusCircle, ShoppingBag, CreditCard, Star, Settings, Download, LogOut } from "lucide-react";
+import Image from "next/image";
 
 type RouteItem = {
   href: string;
@@ -39,59 +40,61 @@ const Sidebar = ({ routes, open, onClose }: { routes?: RouteItem[]; open?: boole
       <div
         aria-hidden={!open}
         onClick={onClose}
-        className={`fixed inset-0 bg-black/40 z-40 transition-opacity lg:hidden ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 bg-black/40 z-40 transition-opacity xl:hidden ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
       />
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 transform transition-transform w-64 lg:static lg:translate-x-0 lg:w-64 bg-[#1f1a17] text-[#efe7db] flex flex-col justify-between ${
-          open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 transform transition-transform w-74 lg:static lg:translate-x-0 xl:w-74 bg-[#292524] text-[#efe7db] flex flex-col justify-between py-3.5 sm:py-4.5 md:py-5.5 lg:py-6.5 ${open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          }`}
       >
         <div>
-          <div className="px-6 py-6 flex items-center gap-3 border-b border-black/10">
-            <div className="w-10 h-10 bg-[#b8924a] rounded flex items-center justify-center text-black font-bold">SA</div>
-            <div>
-              <p className="text-xs font-semibold">VENDOR PORTAL</p>
-              <p className="text-sm font-bold mt-1">ADIRE COUTURE</p>
+          <div>
+            <div className="flex flex-col px-3 sm:px-5 md:px-7 lg:px-9 pb-2 sm:pb-3 md:pb-3.5 lg:pb-4">
+              <Image src={"/svgs/sa-logo.svg"} alt="logo" width={85} height={85} className="-ml-2.5" />
+              <p className="text-xs md:text-sm lg:text-base text-[#C8C0B5] font-medium">VENDOR PORTAL</p>
+            </div>
+
+            <div className="flex flex-col gap-1 md:gap-1.5 lg:gap-2 px-3 sm:px-5 md:px-7 lg:px-9 py-2 sm:py-3 md:py-3.5 lg:py-4 border-y border-[#FAF7F2]/30">
+              <h4 className="text-base md:text-lg lg:text-xl font-bold text-white">ADIRE COUTURE</h4>
+              <p className="text-[10px] md:text-xs lg:text-sm text-[#B5894A] font-bold">Gold tier</p>
             </div>
           </div>
 
-          <nav className="mt-4 px-2 flex flex-col gap-1">
+          <nav className="pt-3 sm:pt-4 md:pt-5 lg:pt-6 flex flex-col">
             {items.map((item) => {
               const active = isActive(item.href);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-r-full transition-colors ${
-                    active ? 'bg-[#b8924a] text-black font-semibold' : 'hover:bg-white/5'
-                  }`}
+                  className={`flex items-center gap-3  px-3 sm:px-5 md:px-7 lg:px-9 py-3 sm:py-4 md:py-4.5 lg:py-5 transition-colors text-[#C8C0B5] font-medium ${active ? 'bg-[#B5894A33] text-white font-bold!' : 'hover:bg-white/5'
+                    }`}
                 >
                   <span className="w-6 h-6 flex items-center justify-center text-inherit">{item.icon ?? <Home size={16} />}</span>
-                  <span className="text-sm">{item.label}</span>
+                  <span className="text-xs md:text-sm lg:text-base">{item.label}</span>
                 </Link>
               );
             })}
           </nav>
         </div>
 
-        <div className="px-4 py-6 border-t border-black/10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-[#2f2f2f] flex items-center justify-center">AC</div>
-              <div>
-                <p className="text-sm font-medium">ADIRE COUTURE</p>
-                <p className="text-xs text-[#d6c6a8]">View store</p>
-              </div>
-            </div>
+        <div className="">
+          <button
+            onClick={() => router.replace("/")}
+            className="px-3 sm:px-5 md:px-7 lg:px-9 rounded-md hover:bg-white/5 flex items-center gap-3 sm:gap-3.5 md:gap-4 lg:gap-4.5 py-3 sm:py-4 md:py-4.5 lg:py-5 w-full cursor-pointer"
+            aria-label="Logout"
+          >
+            <LogOut size={18} className="text-[#B5894A]" />
+            <p>Log out</p>
+          </button>
 
-            <button
-              onClick={() => router.replace("/")}
-              className="p-2 rounded-md hover:bg-white/5"
-              aria-label="Logout"
-            >
-              <LogOut size={18} />
-            </button>
+          <hr className="text-[#FAF7F2]/30 my-2 sm:my-2.5 md:my-3 lg:my-3.5" />
+
+          <div className="flex items-center gap-3 px-3 sm:px-5 md:px-7 lg:px-9 py-1.5 sm:py-2 md:py-2.5 lg:py-3">
+            <div className="w-9 h-9 rounded-full border border-[#C8C0B5]/50 flex items-center justify-center text-[#C8C0B5] text-xs md:text-sm lg:text-base font-medium">AC</div>
+            <div>
+              <p className="text-xs md:text-sm lg:text-base font-medium text-[#C8C0B5]">ADIRE COUTURE</p>
+            </div>
           </div>
         </div>
       </aside>
