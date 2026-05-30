@@ -1,6 +1,9 @@
 import { Product } from "."
+import { useRouter } from "next/navigation"
 
 const ProductTable = ({ products }: { products: Product[] }) => {
+    const router = useRouter();
+
     return (
         <div className="overflow-x-auto w-full">
             <table className="w-full">
@@ -38,9 +41,9 @@ const ProductTable = ({ products }: { products: Product[] }) => {
 
                 <tbody>
                     {products.length > 0 ? (
-                        products.map((product, index) => (
+                        products.map((product) => (
                             <tr
-                                key={index}
+                                key={product.id}
                                 className="border-b border-[#EEE6DA]"
                             >
                                 {/* PRODUCT */}
@@ -86,7 +89,7 @@ const ProductTable = ({ products }: { products: Product[] }) => {
                                 {/* ACTION */}
                                 <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7">
                                     <div className="flex items-center gap-4">
-                                        <button className="text-[#B5894A] underline text-[8px] sm:text-[10px] md:text-xs lg:text-sm cursor-pointer">
+                                        <button onClick={() => router.push(`/vendor/products/${product.id}/edit`)} className="text-[#B5894A] underline text-[8px] sm:text-[10px] md:text-xs lg:text-sm cursor-pointer">
                                             Edit
                                         </button>
 

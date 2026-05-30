@@ -1,27 +1,34 @@
-// components/Input.tsx
+// components/Select.tsx
 import {
     FieldError,
     RegisterOptions,
     UseFormRegister,
 } from "react-hook-form";
 
+type Option = {
+    label: string;
+    value: string;
+};
+
 type Props = {
     label: string;
     name: string;
-    type?: string;
+    options: Option[];
     readonly?: boolean;
     required?: boolean;
+    placeholder?: string;
     register: UseFormRegister<any>;
     registerOptions?: RegisterOptions;
     error?: FieldError;
 };
 
-const Input = ({
+const Select = ({
     label,
     name,
-    type = "text",
+    options,
     readonly,
     required,
+    placeholder = "Select an option",
     register,
     registerOptions,
     error,
@@ -35,11 +42,10 @@ const Input = ({
                 {label} {required && <span className="text-[#DC2626]">*</span>}
             </label>
 
-            <input
+            <select
                 id={name}
-                type={type}
                 {...register(name, registerOptions)}
-                readOnly={readonly}
+                disabled={readonly}
                 className={`
                     border
                     rounded-md
@@ -65,7 +71,18 @@ const Input = ({
                         : "border-[#E8E8E8]"
                     }
                 `}
-            />
+            >
+                <option value="">{placeholder}</option>
+
+                {options.map((option) => (
+                    <option
+                        key={option.value}
+                        value={option.value}
+                    >
+                        {option.label}
+                    </option>
+                ))}
+            </select>
 
             {error && (
                 <span className="text-[#E24B4A] text-[8px] sm:text-[10px] md:text-xs">
@@ -76,4 +93,4 @@ const Input = ({
     );
 };
 
-export default Input;
+export default Select;

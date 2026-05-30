@@ -7,11 +7,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@/shared/components/button";
 import Input from "@/shared/components/input";
 import { AddProductFormData, addProductSchema } from "@/schema/vendor/product.schema";
-import CategorySelector from "./category-selector";
-import PriceSummary from "./prices-summary";
-import ProductImages from "./product-images";
-import SizesAndStock from "./sizes-and-stock";
 import { useVendorHeaderStore } from "@/store/vendor-header";
+import CategorySelector from "../add-product/category-selector";
+import PriceSummary from "../add-product/prices-summary";
+import ProductImages from "../add-product/product-images";
+import SizesAndStock from "../add-product/sizes-and-stock";
 
 
 
@@ -21,13 +21,13 @@ const SIZES = ["S", "M", "L", "XL"];
 const createSizeDefaults = (sizes: string[], value: boolean | number) =>
     Object.fromEntries(sizes.map((s) => [s, value]));
 
-const AddProduct = () => {
+const EditProduct = () => {
     const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0]);
     const { setVendorHeader } = useVendorHeaderStore()
 
     useEffect(() => {
         setVendorHeader({
-            title: "Add New Product"
+            title: "Edit Product"
           })
     }, [])
 
@@ -219,4 +219,4 @@ const AddProduct = () => {
     );
 };
 
-export default AddProduct;
+export default EditProduct;

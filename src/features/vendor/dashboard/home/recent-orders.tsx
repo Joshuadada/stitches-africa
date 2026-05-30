@@ -33,7 +33,7 @@ const orders = [
         },
         country: "Canada",
         status: "Production",
-        action: "View",
+        action: "",
     },
 ]
 
@@ -45,10 +45,6 @@ const RecentOrders = () => {
                 <h3 className="text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-medium text-black">
                     RECENT ORDERS
                 </h3>
-
-                <button className="text-[#B5894A] underline text-[8px] sm:text-[10px] md:text-xs lg:text-sm cursor-pointer">
-                    View all
-                </button>
             </div>
 
             {/* TABLE */}
@@ -88,7 +84,7 @@ const RecentOrders = () => {
                                 key={index}
                                 className="border-b border-[#EFE7DA] last:border-none"
                             >
-                                <td className="pt-2 sm:pt-4 md:pt-6 ď pr-1 font-garamond text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold text-black">
+                                <td className="pt-2 sm:pt-4 md:pt-6 ď pr-1 pb-5 font-garamond text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold text-black">
                                     {order.ref}
                                 </td>
 
@@ -112,11 +108,16 @@ const RecentOrders = () => {
                                     {order.status}
                                 </td>
 
-                                <td className="pt-2 sm:pt-4 md:pt-6 ď pr-1">
-                                    <button className="text-[#B5894A] text-[8px] sm:text-[10px] md:text-xs lg:text-sm cursor-pointer underline">
-                                        {order.action}
-                                    </button>
-                                </td>
+                                {
+                                    order.action && (
+                                        <td className="pt-2 sm:pt-4 md:pt-6 ď pr-1">
+                                            <button className="text-[#B5894A] text-[8px] sm:text-[10px] md:text-xs lg:text-sm cursor-pointer underline">
+                                                {order.action}
+                                            </button>
+                                        </td>
+                                    )
+                                }
+
                             </tr>
                         ))}
                     </tbody>

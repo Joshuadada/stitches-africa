@@ -135,7 +135,7 @@ const Orders = () => {
             <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
 
             {/* ================= TABLE ================= */}
-            <OrderTable orders={filteredOrders} />
+            <OrderTable orders={filteredOrders} activeTab={activeTab} />
         </div>
     )
 }

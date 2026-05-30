@@ -30,6 +30,7 @@ const tabs = [
 
 const products = [
     {
+        id: "product-1",
         name: "Àṣà Adire Wrap Dress",
         category: "rtw",
         categoryData: {
@@ -43,6 +44,7 @@ const products = [
         status: "Active",
     },
     {
+        id: "product-2",
         name: "Ìgbọ̀yà Kaftan Set",
         category: "mto",
         categoryData: {
@@ -56,6 +58,7 @@ const products = [
         status: "Active",
     },
     {
+        id: "product-3",
         name: "Àárò Bespoke Agbada",
         category: "bespoke",
         categoryData: {
@@ -71,6 +74,7 @@ const products = [
 ]
 
 export type Product = {
+    id: string,
     name: string,
     category: string,
     categoryData: {

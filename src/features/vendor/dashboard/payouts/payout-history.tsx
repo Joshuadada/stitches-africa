@@ -30,10 +30,6 @@ const PayoutHistory = () => {
                 <h3 className="text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-medium text-black">
                     PAYOUT HISTORY
                 </h3>
-
-                <button className="text-[#B5894A] underline text-[8px] sm:text-[10px] md:text-xs lg:text-sm cursor-pointer">
-                    View all
-                </button>
             </div>
 
             {/* TABLE */}
