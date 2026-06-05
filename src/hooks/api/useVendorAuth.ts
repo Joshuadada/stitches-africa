@@ -1,11 +1,11 @@
 import { LoginFormData } from "@/schema/auth/login.schema";
 import { RegisterBusinessDetailsFormData, RegisterStartFormData } from "@/schema/auth/vendor-register.schema";
-import { post } from "@/services/api";
+import { get, post } from "@/services/api";
 import { isApiError, type ApiError } from "@/services/api";
 import { useAuthStore } from "@/store/auth";
 import { ApiResponse } from "@/types/auth";
 import { showToast } from "@/utils/toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 export function useVendorLogin(mutationOption: {
@@ -26,7 +26,7 @@ export function useSubmitVendorLogin(reset: () => void) {
     const setToken = state.setAuthToken;
 
     const { mutate: vendorLogin, isPending } = useVendorLogin({
-        onSuccess: (res) => {
+        onSuccess: async (res) => {
             showToast({
                 type: "success",
                 title: "Login Success",
@@ -292,3 +292,15 @@ export function useSubmitVendorRegister(reset: (vendorId: string) => void) {
 
     return { onSubmit, isPending };
 }
+
+export function useVendorProfile() {
+    return useQuery<VendorProfile>({
+      queryKey: ["vendor-profile"],
+      queryFn: async () => {
+        const response = await get<ApiResponse<VendorProfile>>(
+          "/identity/api/profile/vendor",
+        );
+        return response.data;
+      },
+    });
+  }

@@ -12,6 +12,9 @@ export default function VendorAuthLayout({
   return (
     <div className="flex h-screen bg-[#FAF7F2]">
       <Sidebar
+        portalName='Vendor Portal'
+        userName={'Joshua Dada'}
+        badgeTier={'Bronze'}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         routes={[

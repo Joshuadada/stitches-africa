@@ -59,6 +59,8 @@ type AuthState = {
   setVendorRegisterEmail: (vendorRegisterEmail: string) => void;
   vendorRegisterPhone: string;
   setVendorRegisterPhone: (vendorRegisterPhone: string) => void;
+  vendorProfile: string;
+  setVendorProfile: (vendorProfile: string) => void;
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -104,6 +106,9 @@ export const useAuthStore = create<AuthState>()(
 
       vendorRegisterPhone: "",
       setVendorRegisterPhone: (vendorRegisterPhone) => set({ vendorRegisterPhone }),
+
+      vendorProfile: "",
+      setVendorProfile: (vendorProfile) => set({ vendorProfile }),
     }),
     {
       name: `${env}-auth-data`,
