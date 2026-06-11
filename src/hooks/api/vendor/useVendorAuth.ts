@@ -4,8 +4,9 @@ import { get, post } from "@/services/api";
 import { isApiError, type ApiError } from "@/services/api";
 import { useAuthStore } from "@/store/auth";
 import { ApiResponse } from "@/types/auth";
+import { VendorProfile } from "@/types/vendor";
 import { showToast } from "@/utils/toast";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 export function useVendorLogin(mutationOption: {
@@ -22,11 +23,15 @@ export function useVendorLogin(mutationOption: {
 export function useSubmitVendorLogin(reset: () => void) {
     const router = useRouter();
     const state = useAuthStore((state) => state);
+
     const setEmail = state.setAuthEmail;
     const setToken = state.setAuthToken;
+    const setUser = state.setUser;
+    const setUserId = state.setUserId;
+    const setUserType = state.setUserType;
 
     const { mutate: vendorLogin, isPending } = useVendorLogin({
-        onSuccess: async (res) => {
+        onSuccess: (res) => {
             showToast({
                 type: "success",
                 title: "Login Success",
@@ -35,6 +40,10 @@ export function useSubmitVendorLogin(reset: () => void) {
 
             setEmail(res.data.email);
             setToken(res.data.token);
+            setUser(res.data);
+            setUserId(res.data.userId);
+            setUserType('vendor');
+
             router.push("/vendor/home");
             reset();
         },
@@ -294,13 +303,17 @@ export function useSubmitVendorRegister(reset: (vendorId: string) => void) {
 }
 
 export function useVendorProfile() {
+    const setVendorProfile = useAuthStore((state) => state.setVendorProfile);
+
     return useQuery<VendorProfile>({
-      queryKey: ["vendor-profile"],
-      queryFn: async () => {
-        const response = await get<ApiResponse<VendorProfile>>(
-          "/identity/api/profile/vendor",
-        );
-        return response.data;
-      },
+        queryKey: ["vendor-profile"],
+        queryFn: async () => {
+            const response = await get<ApiResponse<VendorProfile>>(
+                "/identity/api/profile/vendor",
+            );
+
+            setVendorProfile(response?.data);
+            return response.data;
+        },
     });
-  }
+}

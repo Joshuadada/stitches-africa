@@ -12,7 +12,7 @@ type VendorHeaderState = {
 export const useVendorHeaderStore =
     create<VendorHeaderState>((set) => ({
         title: "Welcome back",
-        highlight: "Adire Couture",
+        highlight: "",
 
         setVendorHeader: (data) =>
             set({

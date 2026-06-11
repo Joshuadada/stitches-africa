@@ -1,49 +1,49 @@
 "use client";
 
+import { ProductType, ReviewStatus } from "@/types/vendor";
 import Image from "next/image";
 import { useState } from "react";
 
-type ProductType = "Bespoke" | "MTO" | "RTW";
-
 type ReviewCardProps = {
-    reviewer: string;
+    reviewId: number;
+    customerName: string;
     rating: number;
-    status: "awaiting" | "responded";
+    status: ReviewStatus;
     reviewText: string;
-    images?: string[];
+    photoUrls?: string[];
     productName: string;
-    productType: ProductType;
-    existingResponse?: string;
+    productCategory: ProductType;
+    vendorResponseText?: string | null;
     onSubmitResponse: (response: string) => void;
     isSubmitting?: boolean;
 };
 
 const TYPE_BADGE: Record<ProductType, string> = {
     Bespoke: "bg-[#EFE9FF] text-[#6B4FBB]",
-    MTO:     "bg-[#EBF4FF] text-[#2563EB] border border-[#BFDBFE]",
-    RTW:     "bg-[#F0FDF4] text-[#15803D] border border-[#BBF7D0]",
+    MTO: "bg-[#EBF4FF] text-[#2563EB] border border-[#BFDBFE]",
+    RTW: "bg-[#F0FDF4] text-[#15803D] border border-[#BBF7D0]",
 };
 
 const ReviewCard = ({
-    reviewer,
+    customerName,
     rating,
     status,
     reviewText,
-    images = [],
+    photoUrls = [],
     productName,
-    productType,
-    existingResponse,
+    productCategory,
+    vendorResponseText,
     onSubmitResponse,
     isSubmitting,
 }: ReviewCardProps) => {
-    const [response, setResponse] = useState(existingResponse ?? "");
+    const [response, setResponse] = useState(vendorResponseText ?? "");
 
     return (
         <div className="bg-white border border-[#F0EBE1] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-2.5">
                 {/* Left */}
                 <div>
-                    <p className="text-sm font-medium text-[#1F1B17] mb-1">{reviewer}</p>
+                    <p className="text-sm font-medium text-[#1F1B17] mb-1">{customerName}</p>
                     <div className="flex gap-0.5 mb-1.5">
                         {Array.from({ length: 5 }).map((_, i) => (
                             <Image
@@ -55,28 +55,24 @@ const ReviewCard = ({
                             />
                         ))}
                     </div>
-                    {status === "awaiting" && (
-                        <p className="text-[11px] font-medium text-[#B5894A]">Awaiting response</p>
-                    )}
-                    {status === "responded" && (
-                        <p className="text-[11px] font-medium text-[#15803D]">Responded</p>
-                    )}
+
+                    <p className="text-[11px] font-medium text-[#B5894A]">{status}</p>
                 </div>
 
                 {/* Right */}
                 <div className="text-right">
                     <p className="text-xs text-[#5C5650] mb-1.5">{productName}</p>
-                    <span className={`text-[10px] font-medium px-2.5 py-0.5 rounded-full ${TYPE_BADGE[productType]}`}>
-                        {productType}
+                    <span className={`text-[10px] font-medium px-2.5 py-0.5 rounded-full ${TYPE_BADGE[productCategory]}`}>
+                        {productCategory}
                     </span>
                 </div>
             </div>
 
             <p className="text-[13px] text-[#5C5650] leading-relaxed mb-3.5">{reviewText}</p>
 
-            {images.length > 0 && (
+            {photoUrls.length > 0 && (
                 <div className="flex gap-2 mb-4">
-                    {images.map((src, i) => (
+                    {photoUrls.map((src, i) => (
                         <div key={i} className="w-14 h-14 rounded-md overflow-hidden bg-[#2a2a2a] shrink-0">
                             <Image src={src} alt={`Review image ${i + 1}`} width={56} height={56} className="w-full h-full object-cover" />
                         </div>
@@ -85,7 +81,7 @@ const ReviewCard = ({
             )}
 
             {/* Response input — hide if already responded */}
-            {status === "awaiting" && (
+            {!vendorResponseText && (
                 <div className="flex gap-2.5 flex-wrap">
                     <input
                         type="text"
@@ -104,10 +100,10 @@ const ReviewCard = ({
                 </div>
             )}
 
-            {status === "responded" && existingResponse && (
+            {vendorResponseText && (
                 <div className="bg-[#FAFAF8] border border-[#F0EBE1] rounded-lg px-3.5 py-2.5 text-[13px] text-[#5C5650]">
                     <span className="text-[11px] font-medium text-[#8A8278] block mb-1">Your response</span>
-                    {existingResponse}
+                    {vendorResponseText}
                 </div>
             )}
         </div>

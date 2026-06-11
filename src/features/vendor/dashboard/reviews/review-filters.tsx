@@ -58,17 +58,17 @@ const ReviewFilters = ({ totalReviews, filters, onChange }: ReviewFiltersProps) 
                 onChange={(v) => onChange("category", v)}
                 options={[
                     { label: "All categories", value: "all" },
-                    { label: "Bespoke", value: "Bespoke" },
-                    { label: "MTO", value: "MTO" },
-                    { label: "RTW", value: "RTW" },
+                    { label: "Bespoke", value: "bespoke" },
+                    { label: "MTO", value: "mto" },
+                    { label: "RTW", value: "rtw" },
                 ]}
             />
             <FilterSelect
                 value={filters.status}
                 onChange={(v) => onChange("status", v)}
                 options={[
-                    { label: "Awaiting response", value: "awaiting" },
-                    { label: "Responded", value: "responded" },
+                    { label: "Published", value: "published" },
+                    { label: "Hidden", value: "hidden" },
                     { label: "All", value: "all" },
                 ]}
             />

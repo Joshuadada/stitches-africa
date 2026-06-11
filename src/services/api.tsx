@@ -133,7 +133,7 @@ function classifyError(error: AxiosError): ApiError {
 
 function getToken() {
   const authState = useAuthStore.getState();
-  return authState.user?.accessToken || "";
+  return authState?.authToken || "";
 }
 
 // ─── Axios Instance ───────────────────────────────────────────────────────────

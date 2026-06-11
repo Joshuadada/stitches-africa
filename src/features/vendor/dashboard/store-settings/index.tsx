@@ -1,17 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
 import StorePreview from "./store-preview";
 import Button from "@/shared/components/button";
 import StoreLogo from "./store-logo";
-import toast from "react-hot-toast";
 import BrandStory from "./brand-story";
 import ContactInformation from "./contact-information";
 import NotificationPreferences from "./notification-preferences";
 import ProductCategories from "./product-categories";
 import StoreBanner from "./store-banner";
+import { useVendorHeaderStore } from "@/store/vendor-header";
+import { useAuthStore } from "@/store/auth";
 
 type ProductCategory = "rtw" | "mto" | "bespoke";
 
@@ -28,6 +28,16 @@ const StoreSettings = () => {
     const [logoPreview, setLogoPreview] = useState<string | null>(null);
     const [bannerPreview, setBannerPreview] = useState<string | null>(null);
     const [activeCategories, setActiveCategories] = useState<ProductCategory[]>(["rtw", "mto"]);
+
+    const { vendorProfile } = useAuthStore()
+    const { setVendorHeader } = useVendorHeaderStore()
+
+    useEffect(() => {
+        setVendorHeader({
+            title: "Store Settings",
+            highlight: vendorProfile?.businessName || ''
+        })
+    }, [vendorProfile])
 
     const { register, handleSubmit, watch } = useForm<StoreSettingsFormData>({
         defaultValues: {
@@ -49,7 +59,7 @@ const StoreSettings = () => {
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
-            <form onSubmit={handleSubmit((data) => {})} className="space-y-7">
+            <form onSubmit={handleSubmit((data) => { })} className="space-y-7">
                 <StoreLogo preview={logoPreview} onUpload={setLogoPreview} />
                 <StoreBanner preview={bannerPreview} onUpload={setBannerPreview} />
                 <BrandStory register={register} watch={watch} />

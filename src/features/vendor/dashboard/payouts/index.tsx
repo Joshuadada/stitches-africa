@@ -5,16 +5,18 @@ import AccountCard from './account-card'
 import CardContainer from './card-container'
 import PayoutHistory from './payout-history'
 import { useEffect } from 'react'
+import { useAuthStore } from '@/store/auth'
 
 const Payouts = () => {
+  const { vendorProfile } = useAuthStore()
   const { setVendorHeader } = useVendorHeaderStore()
 
   useEffect(() => {
     setVendorHeader({
       title: "Payouts",
-      highlight: "Adire Couture"
+      highlight: vendorProfile?.businessName || ''
     })
-  }, [])
+  }, [vendorProfile])
 
   return (
     <div>

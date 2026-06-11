@@ -9,9 +9,9 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { useSubmitVendorLogin } from "@/hooks/api/useVendorAuth";
+import { useSubmitVendorLogin } from "@/hooks/api/vendor/useVendorAuth";
 import { GoogleLogin, GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
-import { useSubmitVendorSocialLogin } from "@/hooks/api/useVendorAuth";
+import { useSubmitVendorSocialLogin } from "@/hooks/api/vendor/useVendorAuth";
 import { useRef, useState } from "react";
 import Image from 'next/image';
 

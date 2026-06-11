@@ -5,20 +5,22 @@ import RecentOrders from "./recent-orders"
 import Review from "./review"
 import StatCards from "./stat-cards"
 import { useEffect } from "react"
+import { useAuthStore } from "@/store/auth"
 
 const VendorHome = () => {
-    const {setVendorHeader} = useVendorHeaderStore()
+    const { vendorProfile } = useAuthStore()
+    const { setVendorHeader } = useVendorHeaderStore()
 
     useEffect(() => {
         setVendorHeader({
             title: "Welcome back",
-            highlight: "Adire Couture",
+            highlight: vendorProfile?.businessName || '',
         })
-    }, [])
+    }, [vendorProfile])
 
     return (
         <div className="space-y-8 lg:space-y-10">
-            
+
             {/* ================= STATS CARDS ================= */}
             <StatCards />
 

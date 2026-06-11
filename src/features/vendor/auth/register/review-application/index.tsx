@@ -1,6 +1,6 @@
 "use client"
 
-import { useSubmitVendorRegister } from '@/hooks/api/useVendorAuth'
+import { useSubmitVendorRegister } from '@/hooks/api/vendor/useVendorAuth'
 import Button from '@/shared/components/button'
 import { useAuthStore, useVendorOnboardingFilesStore } from '@/store/auth'
 import { useRouter } from 'next/navigation'

@@ -1,89 +1,90 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useMemo, useEffect } from "react";
 import ReviewSection from "./review-section";
-import toast from "react-hot-toast";
 import ReviewCard from "./review-card";
 import ReviewFilters from "./review-filters";
-
-// Replace with your actual data type / API call
-const MOCK_REVIEWS = [
-    {
-        id: "1",
-        reviewer: "Amara O.",
-        rating: 5,
-        status: "awaiting" as const,
-        reviewText: "The fit was absolutely perfect and the indigo is even richer in person worth every naira. Will be ordering again for my sister's wedding.",
-        images: [],
-        productName: "Àṣà Adire Wrap Dress",
-        productType: "Bespoke" as const,
-    },
-    {
-        id: "2",
-        reviewer: "Amara O.",
-        rating: 5,
-        status: "awaiting" as const,
-        reviewText: "The fit was absolutely perfect and the indigo is even richer in person worth every naira. Will be ordering again for my sister's wedding.",
-        images: [],
-        productName: "Tunde A.Adire Print Maxi Skirt",
-        productType: "RTW" as const,
-    },
-    {
-        id: "3",
-        reviewer: "Amara O.",
-        rating: 5,
-        status: "awaiting" as const,
-        reviewText: "The fit was absolutely perfect and the indigo is even richer in person worth every naira. Will be ordering again for my sister's wedding.",
-        images: [],
-        productName: "Asoebi Lace Kaftan",
-        productType: "MTO" as const,
-    },
-];
+import { useVendorHeaderStore } from "@/store/vendor-header";
+import { useAuthStore } from "@/store/auth";
+import { useSubmitRespondReview, useVendorReviews } from "@/hooks/api/vendor/useVendorReview";
+import { showToast } from "@/utils/toast";
+import Loader from "@/shared/components/loader";
+import { VendorReview } from "@/types/vendor";
 
 const Reviews = () => {
-    const queryClient = useQueryClient();
     const [filters, setFilters] = useState({
         rating: "all",
         category: "all",
-        status: "awaiting",
+        status: "all",
     });
 
-   
-    const filtered = useMemo(() =>
-        MOCK_REVIEWS.filter((r) => {
+    const {
+        data: vendorReviews,
+        isLoading,  // true only on the very first fetch, no cached data yet
+        error,
+    } = useVendorReviews();
+
+    const { onSubmit, isPending } = useSubmitRespondReview(() => { })
+
+    useEffect(() => {
+        if (error) {
+            showToast({
+                type: "error",
+                title: "Error",
+                message: error.message,
+            });
+        }
+    }, [error]);
+
+    const filtered: VendorReview[] | undefined = useMemo(() =>
+        vendorReviews?.filter((r) => {
             if (filters.rating !== "all" && r.rating !== Number(filters.rating)) return false;
-            if (filters.category !== "all" && r.productType !== filters.category) return false;
-            if (filters.status !== "all" && r.status !== filters.status) return false;
+            if (filters.category !== "all" && r.productCategory?.toLowerCase() !== filters.category) return false;
+            if (filters.status !== "all" && r.status?.toLowerCase() !== filters.status) return false;
             return true;
         }),
-        [filters]
+        [vendorReviews, filters]
     );
 
     const handleFilterChange = (key: keyof typeof filters, value: string) =>
         setFilters((prev) => ({ ...prev, [key]: value }));
 
+    const { vendorProfile } = useAuthStore()
+    const { setVendorHeader } = useVendorHeaderStore()
+
+    useEffect(() => {
+        setVendorHeader({
+            title: "Reviews",
+            highlight: vendorProfile?.businessName || ''
+        })
+    }, [vendorProfile])
+
+    // Block the shell only on the initial load — not on background refetches
+    if (isLoading) {
+        return <Loader />;
+    }
+
     return (
         <div className="space-y-4">
-            <ReviewSection />
+            <ReviewSection reviews={vendorReviews || []} />
 
             <ReviewFilters
-                totalReviews={filtered.length}
+                totalReviews={filtered?.length || 0}
                 filters={filters}
                 onChange={handleFilterChange}
             />
 
             <div className="space-y-3.5">
-                {filtered.map((review) => (
+                {filtered?.map((review) => (
                     <ReviewCard
-                        key={review.id}
+                        key={review.reviewId}
                         {...review}
-                        isSubmitting={false}
-                        onSubmitResponse={(response) => {}}
+                        isSubmitting={isPending}
+                        onSubmitResponse={(response) => onSubmit({ reviewId: review.reviewId, response })}
                     />
                 ))}
 
-                {filtered.length === 0 && (
+                {filtered?.length === 0 && (
                     <p className="text-center text-sm text-[#8A8278] py-12">
                         No reviews match the selected filters.
                     </p>

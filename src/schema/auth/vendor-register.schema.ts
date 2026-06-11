@@ -11,7 +11,7 @@ export const registerStartSchema = z
         phoneNumber: z
             .string()
             .regex(
-                /^(0\d{10}|\+234\d{10})$/,
+                /^(0\d{10}|\+?[1-9]\d{7,14})$/,
                 "Enter a valid phone number"
             ),
     })

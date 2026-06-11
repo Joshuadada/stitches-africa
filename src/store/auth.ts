@@ -1,4 +1,5 @@
 import { RegisterBusinessDetailsFormData } from "@/schema/auth/vendor-register.schema";
+import { VendorProfile } from "@/types/vendor";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
@@ -59,8 +60,8 @@ type AuthState = {
   setVendorRegisterEmail: (vendorRegisterEmail: string) => void;
   vendorRegisterPhone: string;
   setVendorRegisterPhone: (vendorRegisterPhone: string) => void;
-  vendorProfile: string;
-  setVendorProfile: (vendorProfile: string) => void;
+  vendorProfile: VendorProfile | null;
+  setVendorProfile: (vendorProfile: VendorProfile) => void;
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -107,7 +108,7 @@ export const useAuthStore = create<AuthState>()(
       vendorRegisterPhone: "",
       setVendorRegisterPhone: (vendorRegisterPhone) => set({ vendorRegisterPhone }),
 
-      vendorProfile: "",
+      vendorProfile: null,
       setVendorProfile: (vendorProfile) => set({ vendorProfile }),
     }),
     {
@@ -119,6 +120,7 @@ export const useAuthStore = create<AuthState>()(
         authToken: state.authToken,
         userType: state.userType,
         userId: state.userId,
+        vendorProfile: state.vendorProfile,
         vendorOnboardingData: state.vendorOnboardingData,
       }),
       onRehydrateStorage: () => (state) => {

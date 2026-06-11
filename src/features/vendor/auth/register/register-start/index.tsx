@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Input from '@/shared/components/input';
-import { useSubmitVendorConfirmOtp, useSubmitVendorRegisterStart, useSubmitVendorSocialLogin } from '@/hooks/api/useVendorAuth';
+import { useSubmitVendorConfirmOtp, useSubmitVendorRegisterStart, useSubmitVendorSocialLogin } from '@/hooks/api/vendor/useVendorAuth';
 import {
     RegisterStartFormData,
     registerStartSchema
