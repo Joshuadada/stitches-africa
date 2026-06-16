@@ -31,10 +31,16 @@ export function useRespondReview(mutationOption: {
     });
 }
 
-export function useSubmitRespondReview(reset: () => void) {
-    const { userId: vendorId } = useAuthStore()
+export function useSubmitRespondReview() {
+    const { userId: vendorId } = useAuthStore();
     const queryClient = useQueryClient();
-    const { mutate: respondReview, isPending } = useRespondReview({
+
+    const { mutateAsync: respondReview, isPending } = useMutation({
+        mutationFn: ({ reviewId, response }: { reviewId: number; response: string }) =>
+            post<ApiResponse<any>>(
+                `/trust/reviews/${reviewId}/respond?vendorId=${vendorId}`,
+                { responseText: response }
+            ),
         onSuccess: (res) => {
             showToast({
                 type: "success",
@@ -42,26 +48,28 @@ export function useSubmitRespondReview(reset: () => void) {
                 message: res.message,
             });
 
-            queryClient.invalidateQueries({ queryKey: ["vendor-reviews"] });
-            reset();
+            queryClient.invalidateQueries({
+                queryKey: ["vendor-reviews"],
+            });
         },
         onError: (error: unknown) => {
             const message = isApiError(error)
                 ? error.message
                 : "Something went wrong";
+
             showToast({
                 type: "error",
-                title: "OTP Error",
+                title: "Error",
                 message,
             });
         },
     });
 
-    const onSubmit = (payload: { reviewId: number, response: string }) => {
-        respondReview({
-            vendorId,
-            ...payload
-        });
+    const onSubmit = async (payload: {
+        reviewId: number;
+        response: string;
+    }) => {
+        return respondReview(payload);
     };
 
     return { onSubmit, isPending };

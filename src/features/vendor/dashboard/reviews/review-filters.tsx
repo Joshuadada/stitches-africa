@@ -67,9 +67,9 @@ const ReviewFilters = ({ totalReviews, filters, onChange }: ReviewFiltersProps) 
                 value={filters.status}
                 onChange={(v) => onChange("status", v)}
                 options={[
+                    { label: "All", value: "all" },
                     { label: "Published", value: "published" },
                     { label: "Hidden", value: "hidden" },
-                    { label: "All", value: "all" },
                 ]}
             />
         </div>

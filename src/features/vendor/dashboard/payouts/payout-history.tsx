@@ -1,28 +1,20 @@
-const payouts = [
-    {
-        date: "Mar 31",
-        gross: "N520,000",
-        platformMarkup: "UK",
-        netPayout: "N413,400",
-        status: "Processed",
-    },
-    {
-        date: "Mar 31",
-        gross: "N520,000",
-        platformMarkup: "UK",
-        netPayout: "N413,400",
-        status: "Processed",
-    },
-    {
-        date: "Mar 31",
-        gross: "N520,000",
-        platformMarkup: "UK",
-        netPayout: "N413,400",
-        status: "Processed",
-    },
-]
 
-const PayoutHistory = () => {
+
+const PayoutHistory = ({ payouts }: { payouts: any[] }) => {
+    const toCurrecy = (amount: number, currency: string = "NGN"): string => {
+        return new Intl.NumberFormat("en-NG", {
+            style: "currency",
+            currency,
+        }).format(amount);
+    };
+
+    const formatShortDate = (dateString: string): string => {
+        return new Date(dateString).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+        });
+    };
+
     return (
         <div className="overflow-hidden">
             {/* HEADER */}
@@ -45,13 +37,13 @@ const PayoutHistory = () => {
                                 GROSS
                             </th>
 
-                            <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal py-3 sm:py-4 md:py-5 lg:py-6">
+                            {/* <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal py-3 sm:py-4 md:py-5 lg:py-6">
                                 PLATFORM MARKUP
-                            </th>
+                            </th> */}
 
-                            <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal py-3 sm:py-4 md:py-5 lg:py-6">
+                            {/* <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal py-3 sm:py-4 md:py-5 lg:py-6">
                                 NET PAYOUT
-                            </th>
+                            </th> */}
 
                             <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal py-3 sm:py-4 md:py-5 lg:py-6">
                                 STATUS
@@ -66,20 +58,20 @@ const PayoutHistory = () => {
                                 className="border-b border-[#EFE7DA] last:border-none"
                             >
                                 <td className="pt-2 sm:pt-4 md:pt-6 lg:pt-7 pb-2 lg:pb-2.5 pr-1 font-garamond text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold text-black">
-                                    {payout.date}
+                                    {formatShortDate(payout.periodStart)}
                                 </td>
 
                                 <td className="pt-2 sm:pt-4 md:pt-6 lg:pt-7 pb-2 lg:pb-2.5 pr-1 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm">
-                                    {payout.gross}
+                                    {toCurrecy(payout.totalAmount)}
                                 </td>
 
-                                <td className="pt-2 sm:pt-4 md:pt-6 lg:pt-7 pb-2 lg:pb-2.5 pr-1 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm">
+                                {/* <td className="pt-2 sm:pt-4 md:pt-6 lg:pt-7 pb-2 lg:pb-2.5 pr-1 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm">
                                     {payout.platformMarkup}
-                                </td>
+                                </td> */}
 
-                                <td className="pt-2 sm:pt-4 md:pt-6 lg:pt-7 pb-2 lg:pb-2.5 pr-1 text-[#1D9E75] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-bold">
+                                {/* <td className="pt-2 sm:pt-4 md:pt-6 lg:pt-7 pb-2 lg:pb-2.5 pr-1 text-[#1D9E75] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-bold">
                                     {payout.netPayout}
-                                </td>
+                                </td> */}
 
                                 <td className="pt-2 sm:pt-4 md:pt-6 lg:pt-7 pb-2 lg:pb-2.5 pr-1 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm">
                                     {payout.status}

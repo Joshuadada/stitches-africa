@@ -14,7 +14,7 @@ type ReviewCardProps = {
     productName: string;
     productCategory: ProductType;
     vendorResponseText?: string | null;
-    onSubmitResponse: (response: string) => void;
+    onSubmitResponse: (response: string) => Promise<any>;
     isSubmitting?: boolean;
 };
 
@@ -38,6 +38,15 @@ const ReviewCard = ({
 }: ReviewCardProps) => {
     const [response, setResponse] = useState(vendorResponseText ?? "");
 
+    const handleSubmit = async () => {
+        try {
+            await onSubmitResponse(response);
+            setResponse(""); // Clear input after successful submit
+        } catch (error) {
+            // Leave input intact if submission fails
+        }
+    };
+
     return (
         <div className="bg-white border border-[#F0EBE1] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-2.5">
@@ -48,7 +57,7 @@ const ReviewCard = ({
                         {Array.from({ length: 5 }).map((_, i) => (
                             <Image
                                 key={i}
-                                src={i < rating ? "/svgs/star-icon-2.svg" : "/svgs/star-empty.svg"}
+                                src={i < rating ? "/svgs/star-icon-2.svg" : "/svgs/star-icon.svg"}
                                 alt="star"
                                 width={14}
                                 height={14}
@@ -91,7 +100,7 @@ const ReviewCard = ({
                         className="flex-1 border border-[#D4CFC9] rounded-md px-3.5 py-2.5 text-sm text-[#1F1B17] placeholder:text-[#A8A29E] outline-none transition focus:border-[#B5894A]"
                     />
                     <button
-                        onClick={() => onSubmitResponse(response)}
+                        onClick={handleSubmit}
                         disabled={isSubmitting || !response.trim()}
                         className="bg-[#B5894A] hover:bg-[#9F763B] disabled:opacity-50 text-white text-sm font-medium px-4 py-2.5 rounded-md transition whitespace-nowrap cursor-pointer"
                     >

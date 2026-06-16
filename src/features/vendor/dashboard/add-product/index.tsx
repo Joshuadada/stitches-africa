@@ -12,6 +12,8 @@ import PriceSummary from "./prices-summary";
 import ProductImages from "./product-images";
 import SizesAndStock from "./sizes-and-stock";
 import { useVendorHeaderStore } from "@/store/vendor-header";
+import { useSubmitAddProduct } from "@/hooks/api/vendor/useVendorProducts";
+import { VendorProduct } from "@/types/vendor";
 
 
 
@@ -23,7 +25,7 @@ const createSizeDefaults = (sizes: string[], value: boolean | number) =>
 
 const AddProduct = () => {
     const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0]);
-    const { setVendorHeader } = useVendorHeaderStore()
+    const { setVendorHeader } = useVendorHeaderStore();
 
     useEffect(() => {
         setVendorHeader({
@@ -47,6 +49,7 @@ const AddProduct = () => {
         setValue,
         watch,
         formState: { errors, isValid, isSubmitting },
+        reset
     } = useForm<AddProductFormData>({
         resolver: zodResolver(addProductSchema),
         mode: "onChange",
@@ -67,6 +70,9 @@ const AddProduct = () => {
         () => Number(basePrice?.replace(/,/g, "")) || 0,
         [basePrice]
     );
+
+
+    const { onSubmit: submitProduct, isPending } = useSubmitAddProduct(reset);
 
     // Sync sizes + stock into form state
     const syncSizesToForm = (
@@ -115,7 +121,34 @@ const AddProduct = () => {
     };
 
     const onSubmit = (data: AddProductFormData) => {
-        console.log("FORM DATA:", data);
+        const payload: VendorProduct = {
+            name: data.productTitle,
+            summary: data.description.slice(0, 120),
+            description: data.description,
+            brandId: "default", // replace if you have it
+            typeId: data.category,
+            price: Number(data.basePrice.replace(/,/g, "")),
+            vendorId: "", // optional if hook overrides
+            vendorName: "", // replace from auth/store if needed
+            vendorBadgeTier: "",
+            listingType: data.category,
+            isAiTryOnEnabled: false,
+            lowStockThreshold: 5,
+    
+            variant: Object.entries(stock)
+                .filter(([size]) => selectedSizes[size])
+                .map(([size, quantity]) => ({
+                    size,
+                    stockQuality: quantity,
+                    color: "default",
+                    additionalPrice: 0,
+                })),
+    
+            imageFile: images[0] || ({} as File),
+            images,
+        };
+    
+        submitProduct(payload);
     };
 
     return (
@@ -206,8 +239,8 @@ const AddProduct = () => {
             <div className="mt-12">
                 <Button
                     type="submit"
-                    disabled={!isValid || isSubmitting}
-                    loading={isSubmitting}
+                    disabled={!isValid || isSubmitting || isPending}
+                    loading={isSubmitting || isPending}
                     className="bg-[#B5894A] hover:bg-[#9F763D] p-4 w-full rounded-xl"
                 >
                     <p className="text-white font-semibold text-sm">

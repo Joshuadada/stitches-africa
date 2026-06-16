@@ -1,8 +1,20 @@
-import { Product } from "."
+import { Product } from "@/types/vendor";
 import { useRouter } from "next/navigation"
 
 const ProductTable = ({ products }: { products: Product[] }) => {
     const router = useRouter();
+    const toNaira = (amount: number): string => {
+        return new Intl.NumberFormat("en-NG", {
+            style: "currency",
+            currency: "NGN",
+        }).format(amount);
+    };
+
+    const calculateCustomerFees = (price: number, discountPercentage: number): string => {
+        const discountedPrice = price - (price * discountPercentage) / 100;
+        
+        return toNaira(discountedPrice);
+    }
 
     return (
         <div className="overflow-x-auto w-full">
@@ -60,30 +72,30 @@ const ProductTable = ({ products }: { products: Product[] }) => {
                                 {/* CATEGORY */}
                                 <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7">
                                     <span
-                                        className={`border text-[8px] sm:text-[10px] md:text-xs lg:text-sm rounded-full px-2.5 py-0.5 whitespace-nowrap ${product.categoryData.className}`}
+                                        className={`border border-[#6EE7B7] bg-[#F0FDF4] text-[#065F46] text-[8px] sm:text-[10px] md:text-xs lg:text-sm rounded-full px-2.5 py-0.5 whitespace-nowrap`}
                                     >
-                                        {product.categoryData.label}
+                                        {product.listingType}
                                     </span>
                                 </td>
 
                                 {/* PRICE */}
                                 <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm whitespace-nowrap">
-                                    {product.price}
+                                    {toNaira(product.price)}
                                 </td>
 
                                 {/* CUSTOMER FEES */}
                                 <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm whitespace-nowrap">
-                                    {product.customerFees}
+                                    {calculateCustomerFees(product.price, product.discountPercentage)}
                                 </td>
 
                                 {/* STOCK */}
                                 <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm">
-                                    {product.stock}
+                                    {product.lowStockThreshold}
                                 </td>
 
                                 {/* STATUS */}
                                 <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm">
-                                    {product.status}
+                                    {product.isOnSale ? "Active" : "Inactive"}
                                 </td>
 
                                 {/* ACTION */}

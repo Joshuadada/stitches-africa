@@ -9,8 +9,16 @@ import Loader from '@/shared/components/loader';
 
 const ROUTES: RouteItem[] = [
   { href: '/vendor/home', label: 'Dashboard', icon: "/svgs/dasboard/dashboard-icon.svg" },
-  { href: '/vendor/products', label: 'Products', icon: "/svgs/dasboard/products-icon.svg" },
-  { href: '/vendor/add-product', label: 'Add Product', icon: "/svgs/dasboard/add-product-icon.svg" },
+  {
+    href: '/vendor/products',
+    label: 'Products',
+    icon: "/svgs/dasboard/products-icon.svg",
+    children: [
+      { href: '/vendor/products', label: 'All Product' },
+      { href: '/vendor/add-product', label: 'Add New Product' },
+      { href: '/vendor/create-collection', label: 'Create Collection' },
+    ],
+  },
   { href: '/vendor/orders', label: 'Orders', icon: "/svgs/dasboard/order-icon.svg" },
   { href: '/vendor/payouts', label: 'Payouts', icon: "/svgs/dasboard/payout-icon.svg" },
   { href: '/vendor/reviews', label: 'Reviews', icon: "/svgs/dasboard/review-icon.svg" },

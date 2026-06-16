@@ -136,6 +136,25 @@ function getToken() {
   return authState?.authToken || "";
 }
 
+// ─── Redirect Helper ──────────────────────────────────────────────────────────
+
+/**
+ * Sends the user to the appropriate login page based on the current route.
+ * Vendor-area routes (anything containing "/vendor") go to /vendor/login,
+ * everything else falls back to the default /login page.
+ */
+function redirectToLogin() {
+  if (typeof window === "undefined") return;
+
+  const { pathname } = window.location;
+  const loginPath = pathname.includes("/vendor") ? "/vendor/login" : "/login";
+
+  // Avoid an infinite redirect loop if we're already on the login page
+  if (pathname === loginPath) return;
+
+  window.location.replace(loginPath);
+}
+
 // ─── Axios Instance ───────────────────────────────────────────────────────────
 
 const axiosInstance = axios.create({
@@ -172,7 +191,7 @@ axiosInstance.interceptors.response.use(
 
     if (apiError.kind === "auth") {
       localStorage.clear();
-      // location.replace("/");
+      redirectToLogin();
     }
 
     return Promise.reject(apiError); // always rejects with ApiError

@@ -24,7 +24,7 @@ const Reviews = () => {
         error,
     } = useVendorReviews();
 
-    const { onSubmit, isPending } = useSubmitRespondReview(() => { })
+    const { onSubmit, isPending } = useSubmitRespondReview();
 
     useEffect(() => {
         if (error) {
@@ -80,7 +80,12 @@ const Reviews = () => {
                         key={review.reviewId}
                         {...review}
                         isSubmitting={isPending}
-                        onSubmitResponse={(response) => onSubmit({ reviewId: review.reviewId, response })}
+                        onSubmitResponse={(response) =>
+                            onSubmit({
+                                reviewId: review.reviewId,
+                                response,
+                            })
+                        }
                     />
                 ))}
 

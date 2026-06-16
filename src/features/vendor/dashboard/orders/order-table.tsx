@@ -1,16 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { Order } from "."
+import { useState } from "react"
 import AcceptOrderModal from "./accept-order-modal"
 import AcceptDispatchModal from "./accept-dispatch-modal"
 import RejectOrderModal from "./reject-order-modal"
+import { Order } from "@/types/vendor"
 
 const OrderTable = ({ orders, activeTab }: { orders: Order[], activeTab: string }) => {
-    useEffect(() => {
-        console.log(activeTab)
-    }, [activeTab])
-
     const [openAcceptOrderModal, setOpenAcceptOrderModal] = useState(false)
     const [openAcceptDispatchModal, setOpenAcceptDispatchModal] = useState(false)
     const [openRejectModal, setOpenRejectModal] = useState(false)
@@ -38,16 +34,16 @@ const OrderTable = ({ orders, activeTab }: { orders: Order[], activeTab: string 
                                 COUNTRY
                             </th>
 
-                            <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal pl-6 lg:pl-8 py-2 sm:py-4 md:py-6 lg:py-8">
+                            {/* <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal pl-6 lg:pl-8 py-2 sm:py-4 md:py-6 lg:py-8">
                                 DATE
-                            </th>
+                            </th> */}
 
                             <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal pl-6 lg:pl-8 py-2 sm:py-4 md:py-6 lg:py-8">
                                 STATUS
                             </th>
 
                             {
-                                (activeTab.toLowerCase() === "new" || activeTab.toLowerCase() === "in-progress") && (
+                                (activeTab.toLowerCase() === "pending" || activeTab.toLowerCase() === "inproduction") && (
                                     <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal pl-6 lg:pl-8 py-2 sm:py-4 md:py-6 lg:py-8 rounded-tr-lg sm:rounded-tr-xl md:rounded-tr-2xl lg:rounded-tr-[20px]">
                                         ACTION
                                     </th>
@@ -69,7 +65,7 @@ const OrderTable = ({ orders, activeTab }: { orders: Order[], activeTab: string 
                                             <div className="relative w-6.5 sm:w-8.5 md:w-10.5 lg:w-12.5 h-5 sm:h-7 md:h-9 lg:h-11 rounded-lg overflow-hidden bg-black shrink-0"></div>
 
                                             <h3 className="text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm whitespace-nowrap">
-                                                {order.name}
+                                                {order.lineItems[0].productName}
                                             </h3>
                                         </div>
                                     </td>
@@ -77,9 +73,9 @@ const OrderTable = ({ orders, activeTab }: { orders: Order[], activeTab: string 
                                     {/* CATEGORY */}
                                     <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7">
                                         <span
-                                            className={`border text-[8px] sm:text-[10px] md:text-xs lg:text-sm rounded-full px-2.5 py-0.5 whitespace-nowrap ${order.categoryData.className}`}
+                                           className={`border border-[#6EE7B7] bg-[#F0FDF4] text-[#065F46] text-[8px] sm:text-[10px] md:text-xs lg:text-sm rounded-full px-2.5 py-0.5 whitespace-nowrap`}
                                         >
-                                            {order.categoryData.label}
+                                            {order.orderType}
                                         </span>
                                     </td>
 
@@ -89,9 +85,9 @@ const OrderTable = ({ orders, activeTab }: { orders: Order[], activeTab: string 
                                     </td>
 
                                     {/* DATE */}
-                                    <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm whitespace-nowrap">
+                                    {/* <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm whitespace-nowrap">
                                         {order.date}
-                                    </td>
+                                    </td> */}
 
                                     {/* STATUS */}
                                     <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm">
@@ -100,14 +96,14 @@ const OrderTable = ({ orders, activeTab }: { orders: Order[], activeTab: string 
 
                                     {/* ACTION */}
                                     {
-                                        (activeTab.toLowerCase() === "new" || activeTab.toLowerCase() === "in-progress") && (
+                                        (activeTab.toLowerCase() === "pending" || activeTab.toLowerCase() === "inproduction") && (
                                             <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7">
                                                 <div className="flex items-center gap-4">
                                                     <button onClick={() => {
-                                                        if (activeTab.toLowerCase() === "new") {
+                                                        if (activeTab.toLowerCase() === "pending") {
                                                             setOpenAcceptOrderModal(true)
                                                         }
-                                                        if (activeTab.toLowerCase() === "in-progress") {
+                                                        if (activeTab.toLowerCase() === "inproduction") {
                                                             setOpenAcceptDispatchModal(true)
                                                         }
                                                     }} className="text-[#B5894A] underline text-[8px] sm:text-[10px] md:text-xs lg:text-sm cursor-pointer">
