@@ -1,20 +1,8 @@
+import { Payout } from "@/types/vendor"
+import { formatShortDate, toCurrency } from "@/utils/util-method"
 
 
-const PayoutHistory = ({ payouts }: { payouts: any[] }) => {
-    const toCurrecy = (amount: number, currency: string = "NGN"): string => {
-        return new Intl.NumberFormat("en-NG", {
-            style: "currency",
-            currency,
-        }).format(amount);
-    };
-
-    const formatShortDate = (dateString: string): string => {
-        return new Date(dateString).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-        });
-    };
-
+const PayoutHistory = ({ payouts }: { payouts: Payout[] }) => {
     return (
         <div className="overflow-hidden">
             {/* HEADER */}
@@ -37,13 +25,13 @@ const PayoutHistory = ({ payouts }: { payouts: any[] }) => {
                                 GROSS
                             </th>
 
-                            {/* <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal py-3 sm:py-4 md:py-5 lg:py-6">
+                            <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal py-3 sm:py-4 md:py-5 lg:py-6">
                                 PLATFORM MARKUP
-                            </th> */}
+                            </th>
 
-                            {/* <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal py-3 sm:py-4 md:py-5 lg:py-6">
+                            <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal py-3 sm:py-4 md:py-5 lg:py-6">
                                 NET PAYOUT
-                            </th> */}
+                            </th>
 
                             <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal py-3 sm:py-4 md:py-5 lg:py-6">
                                 STATUS
@@ -62,16 +50,16 @@ const PayoutHistory = ({ payouts }: { payouts: any[] }) => {
                                 </td>
 
                                 <td className="pt-2 sm:pt-4 md:pt-6 lg:pt-7 pb-2 lg:pb-2.5 pr-1 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm">
-                                    {toCurrecy(payout.totalAmount)}
+                                    {toCurrency(payout.gross)}
                                 </td>
 
-                                {/* <td className="pt-2 sm:pt-4 md:pt-6 lg:pt-7 pb-2 lg:pb-2.5 pr-1 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm">
-                                    {payout.platformMarkup}
-                                </td> */}
+                                <td className="pt-2 sm:pt-4 md:pt-6 lg:pt-7 pb-2 lg:pb-2.5 pr-1 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm">
+                                    {toCurrency(payout.platformMarkup)}
+                                </td>
 
-                                {/* <td className="pt-2 sm:pt-4 md:pt-6 lg:pt-7 pb-2 lg:pb-2.5 pr-1 text-[#1D9E75] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-bold">
-                                    {payout.netPayout}
-                                </td> */}
+                                <td className="pt-2 sm:pt-4 md:pt-6 lg:pt-7 pb-2 lg:pb-2.5 pr-1 text-[#1D9E75] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-bold">
+                                    {toCurrency(payout.netPayout)}
+                                </td>
 
                                 <td className="pt-2 sm:pt-4 md:pt-6 lg:pt-7 pb-2 lg:pb-2.5 pr-1 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm">
                                     {payout.status}

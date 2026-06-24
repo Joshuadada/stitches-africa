@@ -1,5 +1,10 @@
+import { useDeleteVendorProduct } from "@/hooks/api/vendor/useVendorProducts";
+import { isApiError } from "@/services/api";
 import { Product } from "@/types/vendor";
+import { showToast } from "@/utils/toast";
+import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation"
+import { useState } from "react";
 
 const ProductTable = ({ products }: { products: Product[] }) => {
     const router = useRouter();
@@ -12,9 +17,42 @@ const ProductTable = ({ products }: { products: Product[] }) => {
 
     const calculateCustomerFees = (price: number, discountPercentage: number): string => {
         const discountedPrice = price - (price * discountPercentage) / 100;
-        
+
         return toNaira(discountedPrice);
     }
+
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+
+    const { mutate: deleteProduct } = useDeleteVendorProduct();
+
+    const handleDelete = (productId: string) => {
+        setDeletingId(productId);
+
+        deleteProduct(productId, {
+            onSuccess: (res: any) => {
+                showToast({
+                    type: "success",
+                    title: "Success",
+                    message: res.message || "Successful",
+                });
+
+                setDeletingId(null);
+            },
+            onError: (error: any) => {
+                const message = isApiError(error)
+                    ? error.message
+                    : "Something went wrong";
+
+                showToast({
+                    type: "error",
+                    title: "Error",
+                    message,
+                });
+
+                setDeletingId(null);
+            },
+        });
+    };
 
     return (
         <div className="overflow-x-auto w-full">
@@ -105,8 +143,13 @@ const ProductTable = ({ products }: { products: Product[] }) => {
                                             Edit
                                         </button>
 
-                                        <button className="text-[#B54A4A] underline text-[8px] sm:text-[10px] md:text-xs lg:text-sm cursor-pointer">
-                                            Delete
+                                        <button className="text-[#B54A4A] underline text-[8px] sm:text-[10px] md:text-xs lg:text-sm cursor-pointer" onClick={() => handleDelete(product.id)}>
+                                            {deletingId === product.id ? (
+                                                <Loader />
+                                            ) : (
+                                                "Delete"
+                                            )}
+
                                         </button>
                                     </div>
                                 </td>
@@ -116,7 +159,7 @@ const ProductTable = ({ products }: { products: Product[] }) => {
                         <tr>
                             <td
                                 colSpan={7}
-                                className="py-20 text-center text-[#8A7E6E] text-lg"
+                                className="py-4 text-center text-[#8A7E6E]"
                             >
                                 No products found
                             </td>

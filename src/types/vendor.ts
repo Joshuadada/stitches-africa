@@ -48,9 +48,9 @@ export type VendorProduct = {
     listingType: string,
     isAiTryOnEnabled: boolean,
     lowStockThreshold: number,
-    variant: { size: string, color: string, stockQuality: number, additionalPrice: number }[],
-    imageFile: File,
-    images: File[]
+    variant: { size: string, color: string, stockQuantity: number, additionalPrice: number }[],
+    imageFile: File | string,
+    images: (string | File)[]
 }
 
 export type Product = {
@@ -106,17 +106,23 @@ export type Order = {
     zipCode: string,
     paymentMethodToken: string,
     paymentMethod: number,
-    status: 'Pending' | 'InProduction' | 'ReadyToShip' | 'Completed' | 'Cancelled',
+    status: 'Pending' | 'InProduction' | 'ReadyToShip' | 'Confirmed' | 'Completed' | 'Cancelled',
     orderType: "ReadyToWear" | "MadeToOrder" | "Bespoke",
     currency: string,
     vendorId: string,
     referralCode: string | null,
     depositAmount: any,
     balanceAmount: any,
+    orderDate: string,           // added
     deliveredAt: string,
+    productName: string,         // added
+    productImageUrl: string | null, // added
+    category: "ReadyToWear" | "MadeToOrder" | "Bespoke",  // added
+    itemCount: number,           // added
     lineItems: {
         productId: string,
         productName: string,
+        imageUrl: string | null, // added
         vendorId: string,
         listingType: "ReadyToWear" | "MadeToOrder" | "Bespoke",
         quantity: number,
@@ -124,4 +130,79 @@ export type Order = {
         subTotal: number
     }[],
     measurements: any
+}
+
+export type Collection = {
+    id: string,
+    name: string,
+    description: string,
+    coverImageUrl: string,
+    createdByVendorId: string,
+    createdByAdminId: string | null,
+    productIds: string[],
+    bundlePrice: number,
+    isOnSale: boolean,
+    discountPercentage: number,
+    discountedPrice: number | null,
+    effectivePrice: number,
+    isPublished: false,
+    createdDate: string,
+    publishedDate: string | null
+}
+
+export type Dashboard = {
+    businessName: string,
+    badgeTier: string,
+    salesThisMonth: number,
+    salesLastMonth: number,
+    salesChangePercent: number,
+    activeOrders: {
+        total: number,
+        readyToWear: number,
+        madeToOrder: number,
+        bespoke: number
+    },
+    activeOrdersValue: number,
+    nextProcessingDate: string | null,
+    reviews: {
+        average: number,
+        total: number,
+        five: number,
+        four: number,
+        three: number,
+        two: number,
+        one: number
+    },
+    recentOrders:
+    {
+        orderRef: string,
+        product: string,
+        category: string,
+        country: string,
+        status: string
+    }[]
+}
+
+export type Payout = {
+    payoutBatchId: string,
+    date: string,
+    periodStart: string,
+    periodEnd: string,
+    gross: number,
+    platformMarkup: number,
+    netPayout: number,
+    currency: string,
+    status: string,
+    bankReference: string | null,
+    scheduledAt: string,
+    processedAt: string
+}
+
+export type BankAccount = {
+    hasBankAccount: boolean,
+    bankName: string | null,
+    accountName: string | null,
+    accountNumberMasked: string | null,
+    isBankAccountVerified: boolean,
+    isPayoutEnabled: boolean
 }

@@ -4,11 +4,10 @@ import { useState } from 'react'
 import Button from '@/shared/components/button'
 import Image from 'next/image'
 import AddPayoutModal from './add-payout-modal'
+import { BankAccount } from '@/types/vendor'
 
-const AccountCard = () => {
+const AccountCard = ({accountDetails}: {accountDetails: BankAccount | null}) => {
     const [openModal, setOpenModal] = useState(false)
-
-    const hasBankAccount = false
 
     const handleCloseModal = () => {
         setOpenModal(false)
@@ -25,15 +24,15 @@ const AccountCard = () => {
     return (
         <>
             <div className='space-y-4'>
-                {hasBankAccount ? (
+                {accountDetails?.hasBankAccount ? (
                     <div className='flex gap-3 flex-wrap items-center justify-between py-2.5 sm:py-3.5 md:py-4 lg:py-4.5 px-3.5 sm:px-4.5 md:px-5.5 lg:px-6 border border-[#B5894A] rounded-2xl lg:rounded-[20px]'>
                         <div>
                             <h4 className='text-[#B5894A] font-garamond font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl'>
-                                GTB BANK
+                                {accountDetails?.bankName}
                             </h4>
 
                             <p className='text-[#76716C] text-[10px] sm:text-xs md:text-sm lg:text-base'>
-                                001237689504 - DAVID NSIRIM
+                                {accountDetails?.accountNumberMasked} - {accountDetails?.accountName}
                             </p>
                         </div>
 
@@ -88,6 +87,7 @@ const AccountCard = () => {
                     isPending={false}
                     onClose={handleCloseModal}
                     onSubmit={handleSubmit}
+                    accountDetails={accountDetails || null}
                 />
             )}
         </>

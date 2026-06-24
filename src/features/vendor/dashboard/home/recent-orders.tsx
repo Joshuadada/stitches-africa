@@ -1,43 +1,6 @@
-const orders = [
-    {
-        ref: "SA-00001",
-        product: "Àṣà Adire Wrap Dress",
-        category: {
-            name: "RTW",
-            className:
-                "border-[#6EE7B7] bg-[#F0FDF4] text-[#065F46]",
-        },
-        country: "UK",
-        status: "New",
-        action: "Accept",
-    },
-    {
-        ref: "SA-00002",
-        product: "Ìgbọ̀yà Kaftan Set",
-        category: {
-            name: "MTO",
-            className:
-                "border-[#93C5FD] bg-[#EFF6FF] text-[#1E3A8A]",
-        },
-        country: "USA",
-        status: "Dispatched",
-        action: "Track",
-    },
-    {
-        ref: "SA-00003",
-        product: "Àárò Bespoke Agbada",
-        category: {
-            name: "Bespoke",
-            className:
-                "border-[#C4B5FD] bg-[#F5F3FF] text-[#4C1D95]",
-        },
-        country: "Canada",
-        status: "Production",
-        action: "",
-    },
-]
+import { Dashboard } from "@/types/vendor"
 
-const RecentOrders = () => {
+const RecentOrders = ({dashboardData}: {dashboardData: Dashboard | null}) => {
     return (
         <div className="overflow-hidden">
             {/* HEADER */}
@@ -72,20 +35,20 @@ const RecentOrders = () => {
                                 STATUS
                             </th>
 
-                            <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal py-3 sm:py-4 md:py-5 lg:py-6">
+                            {/* <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal py-3 sm:py-4 md:py-5 lg:py-6">
                                 ACTION
-                            </th>
+                            </th> */}
                         </tr>
                     </thead>
 
                     <tbody>
-                        {orders.map((order, index) => (
+                        {dashboardData?.recentOrders?.map((order, index) => (
                             <tr
                                 key={index}
                                 className="border-b border-[#EFE7DA] last:border-none"
                             >
                                 <td className="pt-2 sm:pt-4 md:pt-6 ď pr-1 pb-5 font-garamond text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold text-black">
-                                    {order.ref}
+                                    {order.orderRef}
                                 </td>
 
                                 <td className="pt-2 sm:pt-4 md:pt-6 ď pr-1 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm">
@@ -94,9 +57,9 @@ const RecentOrders = () => {
 
                                 <td className="pt-2 sm:pt-4 md:pt-6 ď pr-1">
                                     <span
-                                        className={`border text-[8px] sm:text-[10px] md:text-xs lg:text-sm rounded-full px-4 py-1 ${order.category.className}`}
+                                        className={`text-[8px] sm:text-[10px] md:text-xs lg:text-sm rounded-full px-4 py-1 border border-[#6EE7B7] bg-[#F0FDF4] text-[#065F46]`}
                                     >
-                                        {order.category.name}
+                                        {order.category}
                                     </span>
                                 </td>
 
@@ -108,7 +71,7 @@ const RecentOrders = () => {
                                     {order.status}
                                 </td>
 
-                                {
+                                {/* {
                                     order.action && (
                                         <td className="pt-2 sm:pt-4 md:pt-6 ď pr-1">
                                             <button className="text-[#B5894A] text-[8px] sm:text-[10px] md:text-xs lg:text-sm cursor-pointer underline">
@@ -116,7 +79,7 @@ const RecentOrders = () => {
                                             </button>
                                         </td>
                                     )
-                                }
+                                } */}
 
                             </tr>
                         ))}

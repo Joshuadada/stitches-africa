@@ -1,6 +1,8 @@
+import { Dashboard } from "@/types/vendor"
+import { formatShortDate, toCurrency } from "@/utils/util-method"
 import Image from "next/image"
 
-const StatCards = () => {
+const StatCards = ({dashboardData}: {dashboardData: Dashboard | null}) => {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
             <div className="py-2.5 sm:py-3.5 md:py-4.5 lg:py-5.5 px-5 sm:px-6 md:px-7 lg:px-8 border border-[#F8E6CD] bg-[#FFFDF9] rounded-md flex flex-col justify-between">
@@ -9,7 +11,7 @@ const StatCards = () => {
                 </h4>
 
                 <p className="text-black font-medium text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-garamond mb-1 sm:mb-1.5 md:mb-2 lg:mb-2.5">
-                    N2.4M
+                    {toCurrency(dashboardData?.salesThisMonth || 0)}
                 </p>
 
                 <div className="flex items-center gap-1.5">
@@ -21,7 +23,7 @@ const StatCards = () => {
                     />
 
                     <span className="text-[#1D9E75] text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs">
-                        18% vs last month
+                        {dashboardData?.salesChangePercent}% vs last month
                     </span>
                 </div>
             </div>
@@ -32,7 +34,7 @@ const StatCards = () => {
                 </h4>
 
                 <p className="text-black font-medium text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-garamond mb-1 sm:mb-1.5 md:mb-2 lg:mb-2.5">
-                    14
+                    {dashboardData?.activeOrders?.total}
                 </p>
 
                 <div className="flex gap-2.5 sm:gap-3 md:gap-3.5 lg:gap-4">
@@ -62,11 +64,11 @@ const StatCards = () => {
                 </h4>
 
                 <p className="text-[#B5894A] font-medium text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-garamond mb-1 sm:mb-1.5 md:mb-2 lg:mb-2.5">
-                    N384,000
+                    {toCurrency(dashboardData?.activeOrdersValue || 0)}
                 </p>
 
                 <p className="text-[#A3A3A3] text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs">
-                    Next processing: Mon 7 Apr
+                    Next processing: {formatShortDate(dashboardData?.nextProcessingDate || "")}
                 </p>
             </div>
 
@@ -84,7 +86,7 @@ const StatCards = () => {
                     />
 
                     <p className="text-[#B5894A] font-medium text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-garamond mb-1 sm:mb-1.5 md:mb-2 lg:mb-2.5">
-                        4.9
+                        {dashboardData?.reviews?.average}
                     </p>
                 </div>
             </div>

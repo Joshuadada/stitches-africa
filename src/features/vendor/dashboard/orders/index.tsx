@@ -9,7 +9,7 @@ import { showToast } from "@/utils/toast"
 import Loader from "@/shared/components/loader"
 
 const Orders = () => {
-    const [activeTab, setActiveTab] = useState("Pending")
+    const [activeTab, setActiveTab] = useState("Paid")
     const { setVendorHeader } = useVendorHeaderStore()
 
     const {
@@ -36,22 +36,27 @@ const Orders = () => {
 
     const tabs = [
         {
-            name: "New",
+            name: "Paid",
+            count: vendorOrders?.filter((p) => p.status === "Paid").length ?? 0,
+            value: "Paid",
+        },
+        {
+            name: "Pending",
             count: vendorOrders?.filter((p) => p.status === "Pending").length ?? 0,
             value: "Pending",
         },
         {
-            name: "In Progress",
+            name: "In Production",
             count: vendorOrders?.filter((p) => p.status === "InProduction").length ?? 0,
             value: "InProduction",
         },
         {
-            name: "Dispatched to Hub",
+            name: "Ready to Ship",
             count: vendorOrders?.filter((p) => p.status === "ReadyToShip").length ?? 0,
             value: "ReadyToShip",
         },
         {
-            name: "Completed",
+            name: "Confirmed",
             count: vendorOrders?.filter((p) => p.status === "Confirmed").length ?? 0,
             value: "Confirmed",
         },

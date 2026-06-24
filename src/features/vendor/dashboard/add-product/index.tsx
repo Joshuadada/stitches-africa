@@ -6,19 +6,28 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import Button from "@/shared/components/button";
 import Input from "@/shared/components/input";
+import Select from "@/shared/components/select";
 import { AddProductFormData, addProductSchema } from "@/schema/vendor/product.schema";
 import CategorySelector from "./category-selector";
 import PriceSummary from "./prices-summary";
 import ProductImages from "./product-images";
 import SizesAndStock from "./sizes-and-stock";
 import { useVendorHeaderStore } from "@/store/vendor-header";
-import { useSubmitAddProduct } from "@/hooks/api/vendor/useVendorProducts";
+import { useGetBrands, useGetProductTypes, useSubmitAddProduct } from "@/hooks/api/vendor/useVendorProducts";
 import { VendorProduct } from "@/types/vendor";
+import Loader from "@/shared/components/loader";
+import { showToast } from "@/utils/toast";
 
 
 
-const CATEGORIES = ["Ready to wear", "Made to Order", "Bespoke"];
+const CATEGORIES = ["Ready to Wear", "Made to Order", "Bespoke"];
 const SIZES = ["S", "M", "L", "XL"];
+
+const DISPLAY_TO_LISTING_TYPE: Record<string, string> = {
+    "Ready to Wear": "ReadyToWear",
+    "Made to Order": "MadeToOrder",
+    Bespoke: "Bespoke",
+};
 
 const createSizeDefaults = (sizes: string[], value: boolean | number) =>
     Object.fromEntries(sizes.map((s) => [s, value]));
@@ -27,10 +36,40 @@ const AddProduct = () => {
     const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0]);
     const { setVendorHeader } = useVendorHeaderStore();
 
+    const {
+        data: brands,
+        isLoading: isBrandLoading,
+        error: brandError,
+    } = useGetBrands();
+
+    const {
+        data: productTypes,
+        isLoading: isTypeLoading,
+        error: typeError,
+    } = useGetProductTypes();
+
+    useEffect(() => {
+        if (brandError) {
+            showToast({
+                type: "error",
+                title: "Error",
+                message: brandError.message,
+            });
+        }
+
+        if (typeError) {
+            showToast({
+                type: "error",
+                title: "Error",
+                message: typeError.message,
+            });
+        }
+    }, [brandError, typeError]);
+
     useEffect(() => {
         setVendorHeader({
             title: "Add New Product"
-          })
+        })
     }, [])
 
     const [selectedSizes, setSelectedSizes] = useState<Record<string, boolean>>(
@@ -41,7 +80,7 @@ const AddProduct = () => {
         createSizeDefaults(SIZES, 0) as Record<string, number>
     );
 
-    const [images, setImages] = useState<File[]>([]);
+    const [images, setImages] = useState<(File | string)[]>([]);
 
     const {
         register,
@@ -56,8 +95,12 @@ const AddProduct = () => {
         defaultValues: {
             category: CATEGORIES[0],
             productTitle: "",
-            productCode: "",
+            // productCode: "",
+            brandId: "",
+            productType: "",
+            summary: "",
             description: "",
+            enableAiTryOn: false,
             basePrice: "",
             images: [],
             sizes: [],
@@ -65,12 +108,12 @@ const AddProduct = () => {
     });
 
     const basePrice = watch("basePrice");
+    const enableAiTryOn = watch("enableAiTryOn");
 
     const numericBasePrice = useMemo(
         () => Number(basePrice?.replace(/,/g, "")) || 0,
         [basePrice]
     );
-
 
     const { onSubmit: submitProduct, isPending } = useSubmitAddProduct(reset);
 
@@ -123,93 +166,157 @@ const AddProduct = () => {
     const onSubmit = (data: AddProductFormData) => {
         const payload: VendorProduct = {
             name: data.productTitle,
-            summary: data.description.slice(0, 120),
+            summary: data.summary,
             description: data.description,
-            brandId: "default", // replace if you have it
-            typeId: data.category,
+            brandId: data.brandId,
+            typeId: data.productType,
             price: Number(data.basePrice.replace(/,/g, "")),
             vendorId: "", // optional if hook overrides
             vendorName: "", // replace from auth/store if needed
             vendorBadgeTier: "",
-            listingType: data.category,
-            isAiTryOnEnabled: false,
+            listingType: DISPLAY_TO_LISTING_TYPE[data.category] ?? data.category,
+            isAiTryOnEnabled: data.enableAiTryOn,
             lowStockThreshold: 5,
-    
+
             variant: Object.entries(stock)
                 .filter(([size]) => selectedSizes[size])
                 .map(([size, quantity]) => ({
                     size,
-                    stockQuality: quantity,
+                    stockQuantity: quantity,
                     color: "default",
                     additionalPrice: 0,
                 })),
-    
+
             imageFile: images[0] || ({} as File),
             images,
         };
-    
+
         submitProduct(payload);
     };
+
+    if (isBrandLoading || isTypeLoading) {
+        return <Loader />;
+    }
 
     return (
         <form
             onSubmit={handleSubmit(onSubmit)}
             className="rounded-xl md:rounded-2xl lg:rounded-[20px] bg-white p-6 sm:p-10 md:p-16 lg:p-22 py-4 sm:py-5 md:py-6 lg:py-7 shadow-sm"
         >
-            <CategorySelector
-                categories={CATEGORIES}
-                selected={selectedCategory}
-                onChange={handleCategoryChange}
-            />
+            <div className="mb-8 md:mb-12 lg:mb-16 xl:mb-20">
+                <CategorySelector
+                    categories={CATEGORIES}
+                    selected={selectedCategory}
+                    onChange={handleCategoryChange}
+                />
+            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                {/* Left column */}
-                <div className="lg:col-span-7 flex flex-col gap-7">
-                    <div className="grid sm:grid-cols-2 gap-6">
-                        <Input
-                            label="Product title"
-                            name="productTitle"
-                            type="text"
-                            required
-                            register={register}
-                            error={errors.productTitle}
-                        />
-                        <Input
-                            label="Product code"
-                            name="productCode"
-                            type="text"
-                            required
-                            register={register}
-                            error={errors.productCode}
-                        />
-                    </div>
+            <div className="flex flex-col gap-7 mb-18 sm:mb-22 md:mb-26 lg:mb-30 xl:mb-34">
+                <div className="grid sm:grid-cols-2 gap-6">
+                    <Input
+                        label="Product title"
+                        name="productTitle"
+                        type="text"
+                        required
+                        register={register}
+                        error={errors.productTitle}
+                    />
+                    {/* <Input
+                        label="Product code"
+                        name="productCode"
+                        type="text"
+                        required
+                        register={register}
+                        error={errors.productCode}
+                    /> */}
+                    <Input
+                        label="Short Summary"
+                        name="summary"
+                        type="text"
+                        required
+                        register={register}
+                        error={errors.summary}
+                    />
+                </div>
 
-                    {/* Description */}
-                    <div>
-                        <label className="block text-xs sm:text-sm text-[#171717] mb-2">
-                            Description <span className="text-[#DC2626]">*</span>
-                        </label>
-                        <textarea
-                            {...register("description")}
-                            rows={5}
-                            className="
+                {/* <div>
+                    <Input
+                        label="Short Summary"
+                        name="summary"
+                        type="text"
+                        required
+                        register={register}
+                        error={errors.summary}
+                    />
+                </div> */}
+
+                <div className="grid sm:grid-cols-2 gap-6">
+                    <Select
+                        label="Select Brand"
+                        name="brandId"
+                        options={brands?.map((brand) => ({ value: brand.id, label: brand.name })) ?? []}
+                        required
+                        register={register}
+                        error={errors.brandId}
+                        placeholder="Select Brand"
+                    />
+                    <Select
+                        label="Product Type"
+                        name="productType"
+                        options={productTypes?.map((productType) => ({ value: productType.id, label: productType.name })) ?? []}
+                        required
+                        register={register}
+                        error={errors.productType}
+                        placeholder="Select Type"
+                    />
+                </div>
+
+                {/* Description */}
+                <div>
+                    <label className="block text-xs sm:text-sm text-[#171717] mb-2">
+                        Description <span className="text-[#DC2626]">*</span>
+                    </label>
+                    <textarea
+                        {...register("description")}
+                        rows={5}
+                        className="
                                 w-full rounded-xl border border-[#E8E8E8]
                                 px-4 py-3 text-sm outline-none resize-none
                                 focus:border-[#B5894A] transition
                             "
-                        />
-                        {errors.description && (
-                            <p className="text-red-500 text-xs mt-1">
-                                {errors.description.message}
-                            </p>
-                        )}
-                    </div>
+                    />
+                    {errors.description && (
+                        <p className="text-red-500 text-xs mt-1">
+                            {errors.description.message}
+                        </p>
+                    )}
+                </div>
+            </div>
 
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md-18 md:mb-18 lg:mb-22 xl:mb-26">
+                <div className="lg:col-span-7 flex flex-col gap-12">
                     <ProductImages
                         images={images}
                         onUpload={handleImageUpload}
                         error={errors.images}
                     />
+
+                    <div className="flex flex-col gap-3">
+                        <div className="flex items-center justify-between gap-4">
+                            <p className="text-sm font-medium text-black">
+                                Enable AI-Try On for this product
+                            </p>
+
+                            <button
+                                type="button"
+                                onClick={() => setValue("enableAiTryOn", !enableAiTryOn, { shouldValidate: true })}
+                                className={`h-9 w-16 rounded-full transition ${enableAiTryOn ? "bg-[#B5894A] justify-end" : "bg-[#D9D9D9] justify-start"
+                                    } inline-flex p-1`}
+                            >
+                                <span className="h-7 w-7 rounded-full bg-white shadow-sm" />
+                            </button>
+                        </div>
+                    </div>
 
                     <Input
                         label="Your Base Price (NGN)"
@@ -221,7 +328,6 @@ const AddProduct = () => {
                     />
                 </div>
 
-                {/* Right column */}
                 <div className="lg:col-span-5 flex flex-col gap-6">
                     <SizesAndStock
                         sizes={SIZES}
@@ -231,12 +337,14 @@ const AddProduct = () => {
                         onUpdateStock={handleUpdateStock}
                         error={errors.sizes}
                     />
-
-                    <PriceSummary basePrice={numericBasePrice} />
                 </div>
             </div>
 
-            <div className="mt-12">
+            <div className="mb-8 md:mb-12 lg:mb-16 xl:mb-19">
+                <PriceSummary basePrice={numericBasePrice} />
+            </div>
+
+            <div>
                 <Button
                     type="submit"
                     disabled={!isValid || isSubmitting || isPending}

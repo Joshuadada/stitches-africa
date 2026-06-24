@@ -10,7 +10,7 @@ const CategorySelector = ({
     onChange,
 }: CategorySelectorProps) => {
     return (
-        <div className="mb-10">
+        <div>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-black mb-2.5 sm:mb-3.5 md:mb-4.5 lg:mb-5.5">
                 Select Product Category
             </p>

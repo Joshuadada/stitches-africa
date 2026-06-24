@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/shared/components/button";
+import { toCurrency } from "@/utils/util-method";
 import { X } from "lucide-react";
 
 type AcceptDispatchModalProps = {
@@ -40,9 +41,6 @@ type AcceptDispatchModalProps = {
         };
     };
 };
-
-const formatNaira = (amount: number) =>
-    `₦${amount.toLocaleString("en-NG")}`;
 
 const AcceptDispatchModal = ({
     isPending,
@@ -91,7 +89,7 @@ const AcceptDispatchModal = ({
                                 </span>
                             )}
                             <span className="text-xs text-[#5C5650]">
-                                Qty {order?.product.qty} · {formatNaira(order?.product.price ?? 0)}
+                                Qty {order?.product.qty} · {toCurrency(order?.product.price ?? 0)}
                             </span>
                         </div>
                     </div>
@@ -178,15 +176,15 @@ const AcceptDispatchModal = ({
                 <div className="bg-[#F0E8D6] rounded-lg px-4.5 py-4 mt-5">
                     <div className="flex justify-between text-sm text-[#5C5650] mb-2">
                         <span>Order subtotal</span>
-                        <span>{formatNaira(order?.payout.subtotal ?? 0)}</span>
+                        <span>{toCurrency(order?.payout.subtotal ?? 0)}</span>
                     </div>
                     <div className="flex justify-between text-sm text-[#5C5650] mb-2">
                         <span>Platform markup ({order?.payout.markupPercent}%)</span>
-                        <span>+{formatNaira(order?.payout.markupAmount ?? 0)}</span>
+                        <span>+{toCurrency(order?.payout.markupAmount ?? 0)}</span>
                     </div>
                     <div className="flex justify-between text-[15px] font-semibold text-[#1F1B17] border-t border-[#DDD6CC] pt-2.5 mt-1">
                         <span>Your payout</span>
-                        <span>{formatNaira(order?.payout.total ?? 0)}</span>
+                        <span>{toCurrency(order?.payout.total ?? 0)}</span>
                     </div>
                 </div>
 

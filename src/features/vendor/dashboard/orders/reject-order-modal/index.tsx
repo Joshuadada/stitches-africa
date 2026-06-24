@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import Button from "@/shared/components/button";
 import Select from "@/shared/components/select";
 import { X, Info } from "lucide-react";
+import { toCurrency } from "@/utils/util-method";
 
 type RejectOrderFormData = {
     reason: string;
@@ -41,8 +42,6 @@ const TYPE_BADGE: Record<string, { bg: string; text: string; border: string }> =
     MTO: { bg: "bg-[#EBF4FF]", text: "text-[#2563EB]", border: "border-[#BFDBFE]" },
     RTS: { bg: "bg-[#ECFDF5]", text: "text-[#059669]", border: "border-transparent" },
 };
-
-const formatNaira = (amount: number) => `₦${amount.toLocaleString("en-NG")}`;
 
 const RejectOrderModal = ({
     isPending,
@@ -95,7 +94,7 @@ const RejectOrderModal = ({
                                 {order?.product.type}
                             </span>
                             <span className="text-xs text-[#5C5650]">
-                                Qty {order?.product.qty} · {formatNaira(order?.product.price ?? 0)}
+                                Qty {order?.product.qty} · {toCurrency(order?.product.price ?? 0)}
                             </span>
                         </div>
                     </div>

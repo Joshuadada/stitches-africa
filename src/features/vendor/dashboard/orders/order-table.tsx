@@ -5,11 +5,13 @@ import AcceptOrderModal from "./accept-order-modal"
 import AcceptDispatchModal from "./accept-dispatch-modal"
 import RejectOrderModal from "./reject-order-modal"
 import { Order } from "@/types/vendor"
+import { formatShortDate } from "@/utils/util-method"
 
 const OrderTable = ({ orders, activeTab }: { orders: Order[], activeTab: string }) => {
     const [openAcceptOrderModal, setOpenAcceptOrderModal] = useState(false)
     const [openAcceptDispatchModal, setOpenAcceptDispatchModal] = useState(false)
-    const [openRejectModal, setOpenRejectModal] = useState(false)
+    const [openRejectModal, setOpenRejectModal] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState<null | Order>(null)
 
     const handleCloseModal = () => {
         setOpenAcceptOrderModal(false)
@@ -34,16 +36,16 @@ const OrderTable = ({ orders, activeTab }: { orders: Order[], activeTab: string 
                                 COUNTRY
                             </th>
 
-                            {/* <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal pl-6 lg:pl-8 py-2 sm:py-4 md:py-6 lg:py-8">
+                            <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal pl-6 lg:pl-8 py-2 sm:py-4 md:py-6 lg:py-8">
                                 DATE
-                            </th> */}
+                            </th>
 
                             <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal pl-6 lg:pl-8 py-2 sm:py-4 md:py-6 lg:py-8">
                                 STATUS
                             </th>
 
                             {
-                                (activeTab.toLowerCase() === "pending" || activeTab.toLowerCase() === "inproduction") && (
+                                (activeTab.toLowerCase() === "pending" || activeTab.toLowerCase() === "readytoship") && (
                                     <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal pl-6 lg:pl-8 py-2 sm:py-4 md:py-6 lg:py-8 rounded-tr-lg sm:rounded-tr-xl md:rounded-tr-2xl lg:rounded-tr-[20px]">
                                         ACTION
                                     </th>
@@ -65,7 +67,7 @@ const OrderTable = ({ orders, activeTab }: { orders: Order[], activeTab: string 
                                             <div className="relative w-6.5 sm:w-8.5 md:w-10.5 lg:w-12.5 h-5 sm:h-7 md:h-9 lg:h-11 rounded-lg overflow-hidden bg-black shrink-0"></div>
 
                                             <h3 className="text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm whitespace-nowrap">
-                                                {order.lineItems[0].productName}
+                                                {order.productName}
                                             </h3>
                                         </div>
                                     </td>
@@ -73,7 +75,7 @@ const OrderTable = ({ orders, activeTab }: { orders: Order[], activeTab: string 
                                     {/* CATEGORY */}
                                     <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7">
                                         <span
-                                           className={`border border-[#6EE7B7] bg-[#F0FDF4] text-[#065F46] text-[8px] sm:text-[10px] md:text-xs lg:text-sm rounded-full px-2.5 py-0.5 whitespace-nowrap`}
+                                            className={`border border-[#6EE7B7] bg-[#F0FDF4] text-[#065F46] text-[8px] sm:text-[10px] md:text-xs lg:text-sm rounded-full px-2.5 py-0.5 whitespace-nowrap`}
                                         >
                                             {order.orderType}
                                         </span>
@@ -85,9 +87,9 @@ const OrderTable = ({ orders, activeTab }: { orders: Order[], activeTab: string 
                                     </td>
 
                                     {/* DATE */}
-                                    {/* <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm whitespace-nowrap">
-                                        {order.date}
-                                    </td> */}
+                                    <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm whitespace-nowrap">
+                                        {formatShortDate(order.orderDate)}
+                                    </td>
 
                                     {/* STATUS */}
                                     <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm">
@@ -96,16 +98,17 @@ const OrderTable = ({ orders, activeTab }: { orders: Order[], activeTab: string 
 
                                     {/* ACTION */}
                                     {
-                                        (activeTab.toLowerCase() === "pending" || activeTab.toLowerCase() === "inproduction") && (
+                                        (activeTab.toLowerCase() === "pending" || activeTab.toLowerCase() === "readytoship") && (
                                             <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7">
                                                 <div className="flex items-center gap-4">
                                                     <button onClick={() => {
                                                         if (activeTab.toLowerCase() === "pending") {
                                                             setOpenAcceptOrderModal(true)
                                                         }
-                                                        if (activeTab.toLowerCase() === "inproduction") {
+                                                        if (activeTab.toLowerCase() === "readytoship") {
                                                             setOpenAcceptDispatchModal(true)
                                                         }
+                                                        setSelectedOrder(order)
                                                     }} className="text-[#B5894A] underline text-[8px] sm:text-[10px] md:text-xs lg:text-sm cursor-pointer">
                                                         Accept
                                                     </button>
@@ -138,43 +141,7 @@ const OrderTable = ({ orders, activeTab }: { orders: Order[], activeTab: string 
                     isPending={false}
                     onClose={handleCloseModal}
                     onSubmit={handleCloseModal}
-                    order={{
-                        id: "SA-2847",
-                        placedDate: "May 30",
-                        shipsTo: "Canada",
-                        shippingHub: "SA Hub",
-                        product: {
-                            name: "Àṣà Adire Wrap Dress",
-                            qty: 1,
-                            price: 78000,
-                            isBespoke: true,
-                            referenceImages: [""],
-                        },
-                        measurements: {
-                            bust: '36"',
-                            waist: '28"',
-                            hips: '40"',
-                            length: '52"',
-                            sleeve: '23"',
-                            height: '5\'7"',
-                        },
-                        customization: {
-                            fabric: "Indigo Adire, traditional",
-                            lining: "Silk, ivory",
-                            customerNote: '"Wedding guest in August. Prefer slightly looser fit at waist."',
-                        },
-                        timeline: {
-                            requiredBy: "Jul 14, 2026",
-                            daysRemaining: 45,
-                            suggestedProduction: "14–18 days",
-                        },
-                        payout: {
-                            subtotal: 78000,
-                            markupPercent: 20,
-                            markupAmount: 15600,
-                            total: 93600,
-                        }
-                    }}
+                    order={selectedOrder!!}
                 />
             )}
 

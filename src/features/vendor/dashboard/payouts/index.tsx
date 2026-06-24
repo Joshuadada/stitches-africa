@@ -6,7 +6,7 @@ import CardContainer from './card-container'
 import PayoutHistory from './payout-history'
 import { useEffect } from 'react'
 import { useAuthStore } from '@/store/auth'
-import { useVendorPayouts } from '@/hooks/api/vendor/useVendorPayouts'
+import { useBankAccountDetails, useVendorPayouts } from '@/hooks/api/vendor/useVendorPayouts'
 import { showToast } from '@/utils/toast'
 import Loader from '@/shared/components/loader'
 
@@ -16,19 +16,33 @@ const Payouts = () => {
 
   const {
     data: vendorPayouts,
-    isLoading,
-    error,
+    isLoading: isPayoutLoading,
+    error: payoutError,
   } = useVendorPayouts();
 
+  const {
+    data: accountDetails,
+    isLoading: isAccountDetailsLoading,
+    error: accountDetailsError,
+  } = useBankAccountDetails();
+
   useEffect(() => {
-    if (error) {
+    if (payoutError) {
       showToast({
         type: "error",
         title: "Error",
-        message: error.message,
+        message: payoutError.message,
       });
     }
-  }, [error]);
+
+    if (accountDetailsError) {
+      showToast({
+        type: "error",
+        title: "Error",
+        message: accountDetailsError.message,
+      });
+    }
+  }, [payoutError, accountDetailsError]);
 
   useEffect(() => {
     setVendorHeader({
@@ -37,14 +51,14 @@ const Payouts = () => {
     })
   }, [vendorProfile])
 
-  if (isLoading) {
+  if (isPayoutLoading || isAccountDetailsLoading) {
     return <Loader />;
   }
 
   return (
     <div>
       <div className='mb-6 sm:mb-8 md:mb-10 lg:mb-11.5'><CardContainer /></div>
-      <div className='mb-8 sm:mb-10 md:mb-12 lg:mb-13.5'><AccountCard /></div>
+      <div className='mb-8 sm:mb-10 md:mb-12 lg:mb-13.5'><AccountCard accountDetails={accountDetails || null} /></div>
       <div><PayoutHistory payouts={vendorPayouts || []} /></div>
     </div>
   )

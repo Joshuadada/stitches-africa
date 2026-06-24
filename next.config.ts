@@ -3,6 +3,16 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["10.226.11.160"],
 
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "stitchesafricamedia.blob.core.windows.net",
+        pathname: "/**",
+      },
+    ],
+  },
+
   async rewrites() {
     return [
       {

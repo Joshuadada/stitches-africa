@@ -7,6 +7,8 @@ import { useVendorHeaderStore } from "@/store/vendor-header"
 import { showToast } from "@/utils/toast"
 import { useVendorProducts } from "@/hooks/api/vendor/useVendorProducts"
 import Loader from "@/shared/components/loader"
+import { CollectionTable } from "./collection-table"
+import { useVendorCollections } from "@/hooks/api/vendor/useVendorCollections"
 
 const Products = () => {
     const [activeTab, setActiveTab] = useState("all")
@@ -14,19 +16,33 @@ const Products = () => {
 
     const {
         data: vendorProducts,
-        isLoading,
-        error,
+        isLoading: isProductsLoading,
+        error: productsError,
     } = useVendorProducts();
 
+    const {
+        data: vendorCollections,
+        isLoading: isCollectionsLoading,
+        error: collectionsError,
+    } = useVendorCollections()
+
     useEffect(() => {
-        if (error) {
+        if (productsError) {
             showToast({
                 type: "error",
                 title: "Error",
-                message: error.message,
+                message: productsError.message,
             });
         }
-    }, [error]);
+
+        if (collectionsError) {
+            showToast({
+                type: "error",
+                title: "Error",
+                message: collectionsError.message,
+            });
+        }
+    }, [productsError, collectionsError]);
 
     useEffect(() => {
         setVendorHeader({
@@ -55,6 +71,11 @@ const Products = () => {
             count: vendorProducts?.filter((p) => p.listingType === "Bespoke").length ?? 0,
             value: "Bespoke",
         },
+        {
+            name: "Collections",
+            count: vendorCollections?.length ?? 0,
+            value: "Collections",
+        },
     ]
 
     const filteredProducts =
@@ -64,17 +85,22 @@ const Products = () => {
                 (product) => product.listingType === activeTab
             )
 
-    if (isLoading) {
+    if (isProductsLoading || isCollectionsLoading) {
         return <Loader />;
     }
-    
+
     return (
         <div className="space-y-5 sm:space-y-9 md:space-y-13 lg:space-y-17">
             {/* ================= TABS ================= */}
             <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
 
-            {/* ================= TABLE ================= */}
-            <ProductTable products={filteredProducts || []} />
+            {
+                activeTab === "Collections" ? (
+                    <CollectionTable collections={vendorCollections || []} />
+                ) : (
+                    <ProductTable products={filteredProducts || []} />
+                )
+            }
         </div>
     )
 }

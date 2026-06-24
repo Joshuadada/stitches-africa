@@ -4,6 +4,7 @@ import { addPayoutSchema } from "@/schema/vendor/payout-schema";
 import Button from "@/shared/components/button";
 import Input from "@/shared/components/input";
 import Select from "@/shared/components/select";
+import { BankAccount } from "@/types/vendor";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -12,6 +13,7 @@ type AddPayoutModalProps = {
     isPending: boolean;
     onClose: () => void;
     onSubmit: (data: any) => void;
+    accountDetails: BankAccount | null;
 };
 
 type FormValues = {
@@ -24,6 +26,7 @@ const AddPayoutModal = ({
     isPending,
     onClose,
     onSubmit,
+    accountDetails
 }: AddPayoutModalProps) => {
     const {
         register,
@@ -34,9 +37,9 @@ const AddPayoutModal = ({
         resolver: zodResolver(addPayoutSchema),
         mode: "onChange",
         defaultValues: {
-            bank: "",
-            accountNumber: "",
-            accountName: "",
+            bank: accountDetails?.bankName || "",
+            accountNumber: accountDetails?.accountNumberMasked || "",
+            accountName: accountDetails?.accountName || "",
         },
     });
 
@@ -65,28 +68,31 @@ const AddPayoutModal = ({
                     </button>
                 </div>
 
-                {/* Current Account */}
-                <div className="mb-3 sm:mb-5 md:mb-7 lg:mb-9">
-                    <div className="flex items-center justify-between mb-2 sm:mb-3 md:mb-4 lg:mb-5">
-                        <p className="text-[8px] md:text-[10px] lg:text-xs tracking-wide text-[#8A8278] uppercase">
-                            Current account
-                        </p>
+                {
+                    accountDetails?.hasBankAccount && (
+                        <div className="mb-3 sm:mb-5 md:mb-7 lg:mb-9">
+                            <div className="flex items-center justify-between mb-2 sm:mb-3 md:mb-4 lg:mb-5">
+                                <p className="text-[8px] md:text-[10px] lg:text-xs tracking-wide text-[#8A8278] uppercase">
+                                    Current account
+                                </p>
 
-                        <button className="text-[8px] md:text-[10px] lg:text-xs text-[#EB5757] hover:underline">
-                            Remove
-                        </button>
-                    </div>
+                                <button className="text-[8px] md:text-[10px] lg:text-xs text-[#EB5757] hover:underline">
+                                    Remove
+                                </button>
+                            </div>
 
-                    <div className="bg-[#F0E8D6] rounded-sm px-4 sm:px-5 md:px-6 lg:px-7 py-2.5 sm:py-3 md:py-3.5 lg:py-4">
-                        <h3 className="font-garamond text-sm md:text-base lg:text-lg text-[#B98B5C] font-bold mb-1.5 md:mb-2 lg:mb-2.5">
-                            GTB Bank
-                        </h3>
+                            <div className="bg-[#F0E8D6] rounded-sm px-4 sm:px-5 md:px-6 lg:px-7 py-2.5 sm:py-3 md:py-3.5 lg:py-4">
+                                <h3 className="font-garamond text-sm md:text-base lg:text-lg text-[#B98B5C] font-bold mb-1.5 md:mb-2 lg:mb-2.5">
+                                    GTB Bank
+                                </h3>
 
-                        <p className="text-[#6B6357] text-[10px] md:text-xs lg:text-sm">
-                            ••••• 92504 · David Nsirim
-                        </p>
-                    </div>
-                </div>
+                                <p className="text-[#6B6357] text-[10px] md:text-xs lg:text-sm">
+                                    ••••• 92504 · David Nsirim
+                                </p>
+                            </div>
+                        </div>
+                    )
+                }
 
                 {/* Add New */}
                 <div>
