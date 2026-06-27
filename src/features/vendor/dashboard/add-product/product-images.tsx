@@ -1,9 +1,10 @@
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, X } from "lucide-react";
 import { FieldError } from "react-hook-form";
 
 type ProductImagesProps = {
     images: (File | string)[];
-    onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onUpload: (e: React.ChangeEvent<HTMLInputElement>, index: number) => void;
+    onRemove: (index: number) => void;
     error?: FieldError | { message?: string };
 };
 
@@ -15,6 +16,7 @@ const getImageSrc = (image: File | string): string => {
 const ProductImages = ({
     images,
     onUpload,
+    onRemove,
     error,
 }: ProductImagesProps) => {
     // Always show all filled slots + one empty slot for adding more
@@ -50,15 +52,27 @@ const ProductImages = ({
                                 type="file"
                                 accept="image/*"
                                 hidden
-                                onChange={onUpload}
+                                onChange={(e) => onUpload(e, index)}
                             />
 
                             {image ? (
-                                <img
-                                    src={getImageSrc(image)}
-                                    alt={`Product image ${index + 1}`}
-                                    className="w-full h-full object-cover"
-                                />
+                                <>
+                                    <img
+                                        src={getImageSrc(image)}
+                                        alt={`Product image ${index + 1}`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            onRemove(index);
+                                        }}
+                                        className="absolute top-1 right-1 bg-white/90 rounded-full w-5 h-5 flex items-center justify-center"
+                                    >
+                                        <X size={12} className="text-[#171717]" />
+                                    </button>
+                                </>
                             ) : (
                                 <>
                                     <ImagePlus size={22} className="text-[#B5894A]" />

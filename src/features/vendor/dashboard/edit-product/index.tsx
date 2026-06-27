@@ -217,9 +217,18 @@ const EditProduct = () => {
         });
     };
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = Array.from(e.target.files || []);
-        const updated = [...images, ...files];
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const updated = [...images];
+        updated[index] = file;
+        setImages(updated);
+        setValue("images", updated, { shouldValidate: true });
+    };
+
+    const handleImageRemove = (index: number) => {
+        const updated = images.filter((_, i) => i !== index);
         setImages(updated);
         setValue("images", updated, { shouldValidate: true });
     };
@@ -354,6 +363,7 @@ const EditProduct = () => {
                     <ProductImages
                         images={images}
                         onUpload={handleImageUpload}
+                        onRemove={handleImageRemove}
                         error={errors.images}
                     />
 

@@ -80,6 +80,65 @@ export function useSubmitAddCollection(reset: () => void) {
     return { onSubmit, isPending };
 }
 
+export function useVendorCollectionById(id: string) {
+    return useQuery<Collection>({
+        queryKey: ["vendor-collection", id],
+        queryFn: async () => {
+            const response = await get<ApiResponse<Collection>>(`/Collections/${id}`);
+            return response.data;
+        },
+        enabled: !!id,
+    });
+}
+
+export function useUpdateCollection(id: string) {
+    const queryClient = useQueryClient();
+    const router = useRouter();
+
+    const { mutate: updateCollection, isPending } = useMutation({
+        mutationFn: (formData: FormData) =>
+            put<ApiResponse<any>>(`/Collections/${id}`, formData),
+        onSuccess: (res) => {
+            showToast({
+                type: "success",
+                title: "Success",
+                message: res.message,
+            });
+
+            queryClient.invalidateQueries({ queryKey: ["vendor-collection", id] });
+            queryClient.invalidateQueries({ queryKey: ["vendor-collections"] });
+            router.push('/vendor/products');
+        },
+        onError: (error: unknown) => {
+            const message = isApiError(error)
+                ? error.message
+                : "Something went wrong";
+            showToast({
+                type: "error",
+                title: "Error",
+                message,
+            });
+        },
+    });
+
+    const onSubmit = (payload: CreateCollectionFormData) => {
+        const formData = new FormData();
+        formData.append("name", payload.collectionName);
+        formData.append("description", payload.description);
+        formData.append("bundlePrice", payload.bundlePrice.toString());
+        formData.append("discountPercentage", payload.discountPercentage.toString());
+        formData.append("productIds", JSON.stringify(payload.productIds ?? []));
+
+        if (payload.coverImage) {
+            formData.append("coverImage", payload.coverImage);
+        }
+
+        updateCollection(formData);
+    };
+
+    return { onSubmit, isPending };
+}
+
 export const useDeleteVendorCollection = () => {
     const queryClient = useQueryClient();
 

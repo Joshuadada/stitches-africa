@@ -6,6 +6,7 @@ import { useDeleteVendorCollection, usePublishVendorCollection, useUnpublishVend
 import { isApiError } from '@/services/api'
 import { showToast } from '@/utils/toast'
 import { Loader } from 'lucide-react'
+import { toCurrency } from '@/utils/util-method'
 
 export const CollectionTable = ({ collections }: { collections: Collection[] }) => {
     const router = useRouter()
@@ -112,14 +113,14 @@ export const CollectionTable = ({ collections }: { collections: Collection[] }) 
                                     <div className='flex flex-col gap-3 sm:gap-4 lg:gap-5'>
                                         <h4 className='text-black font-semibold text-base sm:text-lg lg:text-xl'>{collection.name}</h4>
                                         <div className="flex items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12 text-[#736551] text-[10px] sm:text-xs lg:text-sm">
-                                            <p>Bundle price: {collection.bundlePrice}</p>
+                                            <p>Bundle price: {toCurrency(collection.bundlePrice || 0)}</p>
                                             <p>{collection.productIds?.length} Products</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className='flex items-center gap-1.5 sm:gap-2.5 lg:gap-3.5'>
-                                    <a className='text-black underline text-[10px] sm:text-xs lg:text-sm cursor-pointer'>Edit</a>
+                                    <a className='text-black underline text-[10px] sm:text-xs lg:text-sm cursor-pointer' onClick={() => router.push(`/vendor/collections/${collection.id}/edit`)}>Edit</a>
                                     {
                                         collection.isPublished ? (
                                             <a className='text-[#B5894A] underline text-[10px] sm:text-xs lg:text-sm cursor-pointer' onClick={() => handleUnpublish(collection.id)}>

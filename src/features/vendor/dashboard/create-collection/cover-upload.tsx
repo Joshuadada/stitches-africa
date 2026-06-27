@@ -1,10 +1,20 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 
-const CoverUpload = ({ onChange }: { onChange: (f: File | null) => void }) => {
+const CoverUpload = ({
+  onChange,
+  initialImageUrl,
+}: {
+  onChange: (f: File | null) => void
+  initialImageUrl?: string
+}) => {
   const [file, setFile] = useState<File | null>(null)
-  const [preview, setPreview] = useState<string | null>(null)
+  const [preview, setPreview] = useState<string | null>(initialImageUrl ?? null)
+
+  useEffect(() => {
+    if (initialImageUrl) setPreview(initialImageUrl)
+  }, [initialImageUrl])
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0] ?? null
@@ -31,18 +41,16 @@ const CoverUpload = ({ onChange }: { onChange: (f: File | null) => void }) => {
       </div>
 
       <div className="rounded-xl border border-dashed border-[#B5863C] p-6 flex items-center justify-center h-52">
-        {file ? (
+        {preview ? (
           <div className="flex items-center gap-4">
             <div className="h-24 w-36 rounded-md overflow-hidden bg-[#F3EFEA] flex items-center justify-center">
-              {preview ? (
-                <img src={preview} alt="Cover preview" className="h-full w-full object-cover" />
-              ) : (
-                <span className="text-xs text-[#C7B99B]">Preview</span>
-              )}
+              <img src={preview} alt="Cover preview" className="h-full w-full object-cover" />
             </div>
             <div>
-              <p className="text-sm font-medium">{file.name}</p>
-              <p className="text-xs text-[#6A5D4D]">{Math.round(file.size / 1024)} KB</p>
+              <p className="text-sm font-medium">{file ? file.name : "Current cover image"}</p>
+              {file && (
+                <p className="text-xs text-[#6A5D4D]">{Math.round(file.size / 1024)} KB</p>
+              )}
             </div>
             <button
               type="button"
