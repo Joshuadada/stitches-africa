@@ -212,13 +212,13 @@ const AddProduct = () => {
             onSubmit={handleSubmit(onSubmit)}
             className="rounded-xl md:rounded-2xl lg:rounded-[20px] bg-white p-6 sm:p-10 md:p-16 lg:p-22 py-4 sm:py-5 md:py-6 lg:py-7 shadow-sm"
         >
-            <div className="mb-8 md:mb-12 lg:mb-16 xl:mb-20">
+            {/* <div className="mb-8 md:mb-12 lg:mb-16 xl:mb-20">
                 <CategorySelector
                     categories={CATEGORIES}
                     selected={selectedCategory}
                     onChange={handleCategoryChange}
                 />
-            </div>
+            </div> */}
 
             <div className="flex flex-col gap-7 mb-18 sm:mb-22 md:mb-26 lg:mb-30 xl:mb-34">
                 <div className="grid sm:grid-cols-2 gap-6">

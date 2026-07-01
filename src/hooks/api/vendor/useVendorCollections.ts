@@ -66,7 +66,7 @@ export function useSubmitAddCollection(reset: () => void) {
         formData.append("name", payload.collectionName);
         formData.append("description", payload.description);
         formData.append("bundlePrice", payload.bundlePrice.toString());
-        formData.append("discountPercentage", payload.discountPercentage.toString());
+        formData.append("discountPercentage", (payload.discountPercentage || "0").toString());
         formData.append("productIds", JSON.stringify(payload.productIds ?? []));
         formData.append("createdByVendorId", vendorId!);
 
@@ -126,7 +126,7 @@ export function useUpdateCollection(id: string) {
         formData.append("name", payload.collectionName);
         formData.append("description", payload.description);
         formData.append("bundlePrice", payload.bundlePrice.toString());
-        formData.append("discountPercentage", payload.discountPercentage.toString());
+        formData.append("discountPercentage", (payload.discountPercentage || "0").toString());
         formData.append("productIds", JSON.stringify(payload.productIds ?? []));
 
         if (payload.coverImage) {

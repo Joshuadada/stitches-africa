@@ -7,15 +7,13 @@ export const createCollectionSchema = z.object({
 
   bundlePrice: z
     .string()
-    .min(1, "Bundle price is required")
-    .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-      message: "Bundle price must be a valid amount greater than 0",
+    .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
+      message: "Bundle price must be a valid amount",
     }),
 
   discountPercentage: z
     .string()
-    .min(1, "Discount percentage is required")
-    .refine((val) => !isNaN(Number(val)) && Number(val) >= 0 && Number(val) <= 100, {
+    .refine((val) => val === "" || (!isNaN(Number(val)) && Number(val) >= 0 && Number(val) <= 100), {
       message: "Discount percentage must be between 0 and 100",
     }),
 

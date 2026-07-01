@@ -1,13 +1,12 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useVendorHeaderStore } from "@/store/vendor-header"
 import { CreateCollectionFormData, createCollectionSchema } from "@/schema/vendor/collection.schema"
 import Button from "@/shared/components/button"
 import Input from "@/shared/components/input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { useState } from "react"
 import AddProductsModal from "./add-products-modal"
 import CoverUpload from "./cover-upload"
 import ProductsGrid from "./products-grid"
@@ -29,7 +28,7 @@ const CreateCollection = () => {
     handleSubmit,
     setValue,
     reset,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<CreateCollectionFormData>({
     resolver: zodResolver(createCollectionSchema),
     mode: "onChange",
@@ -37,12 +36,18 @@ const CreateCollection = () => {
       collectionName: "",
       description: "",
       bundlePrice: "",
-      discountPercentage: "",
+      discountPercentage: "0",
       productIds: [],
     },
   })
 
   const { onSubmit, isPending } = useSubmitAddCollection(reset)
+
+  // Auto-compute bundle price from selected products
+  useEffect(() => {
+    const total = selectedProducts.reduce((sum, p) => sum + p.price, 0)
+    setValue("bundlePrice", total.toString(), { shouldValidate: true })
+  }, [selectedProducts])
 
   // Sync selected products into RHF so Zod validation sees them
   const handleAddProducts = (items: Product[]) => {
@@ -135,15 +140,14 @@ const CreateCollection = () => {
               label="Bundle Price"
               name="bundlePrice"
               required
+              readonly
               register={register}
-              error={errors.bundlePrice as any}
             />
           </div>
           <div className="w-full">
             <Input
               label="Discount Percentage"
               name="discountPercentage"
-              required
               register={register}
               error={errors.discountPercentage as any}
             />
@@ -153,7 +157,7 @@ const CreateCollection = () => {
         <Button
           type="submit"
           className="bg-[#B5894A] p-4 rounded-xl text-white font-bold text-sm"
-          disabled={isPending}
+          disabled={isPending || !isValid}
           loading={isPending}
         >
           Publish collection

@@ -36,7 +36,7 @@ const EditCollection = () => {
     handleSubmit,
     setValue,
     reset,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<CreateCollectionFormData>({
     resolver: zodResolver(createCollectionSchema),
     mode: "onChange",
@@ -44,7 +44,7 @@ const EditCollection = () => {
       collectionName: "",
       description: "",
       bundlePrice: "",
-      discountPercentage: "",
+      discountPercentage: "0",
       productIds: [],
     },
   })
@@ -56,13 +56,19 @@ const EditCollection = () => {
     reset({
       collectionName: collection.name,
       description: collection.description,
-      bundlePrice: collection.bundlePrice.toString(),
-      discountPercentage: collection.discountPercentage.toString(),
+      bundlePrice: "", // computed by products effect
+      discountPercentage: collection.discountPercentage?.toString() ?? "0",
       productIds: collection.productIds,
     })
 
     setSelectedProducts(products.filter((p) => collection.productIds.includes(p.id)))
   }, [collection, products])
+
+  // Auto-compute bundle price from selected products
+  useEffect(() => {
+    const total = selectedProducts.reduce((sum, p) => sum + p.price, 0)
+    setValue("bundlePrice", total.toString(), { shouldValidate: true })
+  }, [selectedProducts])
 
   const { onSubmit, isPending } = useUpdateCollection(id)
 
@@ -158,15 +164,14 @@ const EditCollection = () => {
               label="Bundle Price"
               name="bundlePrice"
               required
+              readonly
               register={register}
-              error={errors.bundlePrice as any}
             />
           </div>
           <div className="w-full">
             <Input
               label="Discount Percentage"
               name="discountPercentage"
-              required
               register={register}
               error={errors.discountPercentage as any}
             />
@@ -176,7 +181,7 @@ const EditCollection = () => {
         <Button
           type="submit"
           className="bg-[#B5894A] p-4 rounded-xl text-white font-bold text-sm"
-          disabled={isPending}
+          disabled={isPending || !isValid}
           loading={isPending}
         >
           Update collection

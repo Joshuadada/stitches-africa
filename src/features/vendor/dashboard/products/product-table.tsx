@@ -15,12 +15,6 @@ const ProductTable = ({ products }: { products: Product[] }) => {
         }).format(amount);
     };
 
-    const calculateCustomerFees = (price: number, discountPercentage: number): string => {
-        const discountedPrice = price - (price * discountPercentage) / 100;
-
-        return toNaira(discountedPrice);
-    }
-
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const { mutate: deleteProduct } = useDeleteVendorProduct();
@@ -72,7 +66,15 @@ const ProductTable = ({ products }: { products: Product[] }) => {
                         </th>
 
                         <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal pl-6 lg:pl-8 py-2 sm:py-4 md:py-6 lg:py-8">
-                            CUSTOMER FEES
+                            PRODUCT FEE
+                        </th>
+
+                        <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal pl-6 lg:pl-8 py-2 sm:py-4 md:py-6 lg:py-8">
+                            MARKUP
+                        </th>
+
+                        <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal pl-6 lg:pl-8 py-2 sm:py-4 md:py-6 lg:py-8">
+                            TOTAL FEE
                         </th>
 
                         <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal pl-6 lg:pl-8 py-2 sm:py-4 md:py-6 lg:py-8">
@@ -123,12 +125,16 @@ const ProductTable = ({ products }: { products: Product[] }) => {
 
                                 {/* CUSTOMER FEES */}
                                 <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm whitespace-nowrap">
-                                    {calculateCustomerFees(product.price, product.discountPercentage)}
+                                    {toNaira(product.markupAmount)}
+                                </td>
+
+                                <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm whitespace-nowrap">
+                                    {toNaira(product.totalCost)}
                                 </td>
 
                                 {/* STOCK */}
                                 <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm">
-                                    {product.lowStockThreshold}
+                                    {product.stockQuantity}
                                 </td>
 
                                 {/* STATUS */}

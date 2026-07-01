@@ -54,8 +54,12 @@ const AddProductsModal = ({
               <div key={p.id} className="flex items-center gap-3.5 py-3.5 border-b border-[#E3DDD0]">
                 <input type="checkbox" checked={!!selected[p.id]} onChange={() => toggle(p.id)} className="w-4 h-4" />
 
-                <div className="h-10 w-10 bg-[#F3EFEA] rounded-md flex items-center justify-center">
-                  <span className="text-xs text-[#C7B99B]">Img</span>
+                <div className="h-10 w-10 bg-[#F3EFEA] rounded-md overflow-hidden flex-shrink-0">
+                  {p.imageFile ? (
+                    <img src={p.imageFile} alt={p.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center text-xs text-[#C7B99B]">Img</span>
+                  )}
                 </div>
 
                 <div className="flex-1">
