@@ -1,4 +1,4 @@
-import Home from '@/features/dashboard/home'
+import Home from '@/features/customer/dashboard/home'
 
 const HomePage = () => {
   return (

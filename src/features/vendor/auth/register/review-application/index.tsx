@@ -5,13 +5,24 @@ import Button from '@/shared/components/button'
 import { useAuthStore, useVendorOnboardingFilesStore } from '@/store/auth'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import DetailsBlock from './details-block'
 import ApplicationSubmittedModal from '@/shared/modals/application-submitted-modal.tsx'
 import { showToast } from '@/utils/toast'
+import { vendorReviewApplicationSchema, VendorReviewApplicationFormData } from '@/schema/auth/vendor-review-application.schema'
 
 const ReviewApplication = () => {
     const [openSubmittedModal, setOpenSubmittedModal] = useState(false);
-    const [confirmed, setConfirmed] = useState(false)
+    const {
+        register,
+        handleSubmit: handleFormSubmit,
+        formState: { isValid },
+    } = useForm<VendorReviewApplicationFormData>({
+        resolver: zodResolver(vendorReviewApplicationSchema),
+        mode: "onChange",
+        defaultValues: { confirmed: false },
+    });
     const { vendorOnboardingData, clearVendorOnboardingData } = useAuthStore();
     const [vendorId, setVendorId] = useState("")
     const router = useRouter()
@@ -35,7 +46,7 @@ const ReviewApplication = () => {
     };
 
     const handleSubmit = () => {
-        if (!confirmed || !vendorOnboardingData) return
+        if (!vendorOnboardingData) return
         onSubmit(vendorOnboardingData, { additionalFile, portfolioFiles, govIdFiles })
     }
 
@@ -181,8 +192,7 @@ const ReviewApplication = () => {
                     <div className='flex gap-1.5 sm:gap-2.5 md:gap-3.5 lg:gap-4.5 bg-[#FAF7F2] px-2 sm:px-3 md:px-4 lg:px-5 py-3 sm:py-4 md:py-5 lg:py-6 rounded-lg mb-10 sm:mb-12 md:mb-16 lg:mb-20 xl:mb-26'>
                         <input
                             type="checkbox"
-                            checked={confirmed}
-                            onChange={(e) => setConfirmed(e.target.checked)}
+                            {...register("confirmed")}
                             className="w-3 md:w-4 lg:w-5 h-3 md:h-4 lg:h-5 accent-black mt-0.5 shrink-0"
                         />
                         <p className='text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm'>
@@ -196,10 +206,10 @@ const ReviewApplication = () => {
                             <p className='font-medium text-[10px] sm:text-xs lg:text-sm text-black'>&larr; Back</p>
                         </Button>
                         <Button
-                            onClick={handleSubmit}
+                            onClick={handleFormSubmit(handleSubmit)}
                             type='button'
                             className='bg-[#B5894A] p-3'
-                            disabled={!confirmed || isPending}
+                            disabled={!isValid || isPending}
                             loading={isPending}
                         >
                             <p className='font-medium text-[10px] sm:text-xs lg:text-sm text-white'>Submit application &rarr;</p>

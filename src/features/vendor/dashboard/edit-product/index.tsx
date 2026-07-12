@@ -14,6 +14,7 @@ import CategorySelector from "../add-product/category-selector";
 import PriceSummary from "../add-product/prices-summary";
 import ProductImages from "../add-product/product-images";
 import SizesAndStock from "../add-product/sizes-and-stock";
+import SizeChartModal from "@/shared/modals/size-chart-modal";
 import { useParams } from "next/navigation";
 import { useVendorProductById, useUpdateProduct, useGetBrands, useGetProductTypes } from "@/hooks/api/vendor/useVendorProducts";
 import Loader from "@/shared/components/loader";
@@ -96,6 +97,8 @@ const EditProduct = () => {
     );
 
     const [images, setImages] = useState<File[]>([]);
+
+    const [showSizeGuide, setShowSizeGuide] = useState(false);
 
     const {
         register,
@@ -408,6 +411,15 @@ const EditProduct = () => {
                         onUpdateStock={handleUpdateStock}
                         error={errors.sizes}
                     />
+                    <div className="flex justify-end">
+                        <button
+                            type="button"
+                            onClick={() => setShowSizeGuide(true)}
+                            className="text-[#B5894A] hover:text-[#9F763D] underline cursor-pointer font-medium text-sm"
+                        >
+                            View Size guide
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -427,6 +439,10 @@ const EditProduct = () => {
                     </p>
                 </Button>
             </div>
+
+            {showSizeGuide && (
+                <SizeChartModal onClose={() => setShowSizeGuide(false)} />
+            )}
         </form>
     );
 };

@@ -209,3 +209,17 @@ export type BankAccount = {
     isBankAccountVerified: boolean,
     isPayoutEnabled: boolean
 }
+
+export type PayoutSummary = {
+    pendingPayout: number,
+    nextProcessingDate: string | null,
+    paidThisMonth: number,
+    totalPaidAllTime: number,
+    sinceDate: string,
+    currency: string
+}
+
+export type Bank = {
+    name: string,
+    code: string
+}

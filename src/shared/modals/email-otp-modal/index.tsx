@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import OTPInput from "react-otp-input";
 import { Check } from "lucide-react";
 import Button from "../../components/button";
 import Image from "next/image";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { emailOtpSchema, EmailOtpFormData } from "@/schema/auth/email-otp.schema";
 
 type EmailOtpModalProps = {
     email: string;
@@ -21,7 +23,15 @@ const EmailOtpModal = ({
     onSubmit,
     onResend
 }: EmailOtpModalProps) => {
-    const [otp, setOtp] = useState("");
+    const {
+        control,
+        handleSubmit,
+        formState: { errors, isValid },
+    } = useForm<EmailOtpFormData>({
+        resolver: zodResolver(emailOtpSchema),
+        mode: "onChange",
+        defaultValues: { otp: "" },
+    });
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px] px-4">
@@ -57,70 +67,79 @@ const EmailOtpModal = ({
                 </div>
 
                 {/* OTP Input */}
-                <div className="mb-5.5 sm:mb-6 md:mb-6.5 lg:mb-7">
-                    <OTPInput
-                        value={otp}
-                        onChange={(value) => setOtp(value)}
-                        numInputs={6}
-                        shouldAutoFocus
-                        renderSeparator={<span className="w-1 sm:w-2" />}
-                        containerStyle={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            gap: "2px",
-                        }}
-                        renderInput={(props) => (
-                            <input
-                                {...props}
-                                type="text"
-                                inputMode="numeric"
-                                pattern="[0-9]*"
-                                autoComplete="one-time-code"
-                                onKeyDown={(e) => {
-                                    const allowedKeys = [
-                                        "Backspace",
-                                        "Delete",
-                                        "ArrowLeft",
-                                        "ArrowRight",
-                                        "Tab",
-                                    ];
-
-                                    if (
-                                        !/^\d$/.test(e.key) &&
-                                        !allowedKeys.includes(e.key)
-                                    ) {
-                                        e.preventDefault();
-                                    }
+                <div className="mb-2 sm:mb-2.5">
+                    <Controller
+                        name="otp"
+                        control={control}
+                        render={({ field }) => (
+                            <OTPInput
+                                value={field.value}
+                                onChange={field.onChange}
+                                numInputs={6}
+                                shouldAutoFocus
+                                renderSeparator={<span className="w-1 sm:w-2" />}
+                                containerStyle={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    gap: "2px",
                                 }}
-                                className="
-                                    w-10!
-                                    h-12!
-                                    sm:w-12!
-                                    sm:h-14!
-                                    md:w-14!
-                                    md:h-16!
-                                    rounded-md
-                                    border
-                                    border-[#E7DED2]
-                                    text-center
-                                    text-lg
-                                    md:text-xl
-                                    font-semibold
-                                    text-[#171717]
-                                    outline-none
-                                    focus:border-black
-                                    transition
-                                "
+                                renderInput={(props) => (
+                                    <input
+                                        {...props}
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
+                                        autoComplete="one-time-code"
+                                        onKeyDown={(e) => {
+                                            const allowedKeys = [
+                                                "Backspace",
+                                                "Delete",
+                                                "ArrowLeft",
+                                                "ArrowRight",
+                                                "Tab",
+                                            ];
+
+                                            if (
+                                                !/^\d$/.test(e.key) &&
+                                                !allowedKeys.includes(e.key)
+                                            ) {
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                        className="
+                                            w-10!
+                                            h-12!
+                                            sm:w-12!
+                                            sm:h-14!
+                                            md:w-14!
+                                            md:h-16!
+                                            rounded-md
+                                            border
+                                            border-[#E7DED2]
+                                            text-center
+                                            text-lg
+                                            md:text-xl
+                                            font-semibold
+                                            text-[#171717]
+                                            outline-none
+                                            focus:border-black
+                                            transition
+                                        "
+                                    />
+                                )}
                             />
                         )}
                     />
                 </div>
+                {errors.otp && (
+                    <p className="text-[#E24B4A] text-xs text-center mb-4">{errors.otp.message}</p>
+                )}
 
                 <Button
                     type='submit'
-                    onClick={() => onSubmit(otp)}
+                    onClick={handleSubmit((data) => onSubmit(data.otp))}
                     loading={isPending}
-                    disabled={otp.length != 6 || isPending}
+                    disabled={!isValid || isPending}
                     className='bg-[#171717] p-3'
                 >
                     <p className='font-semibold text-[10px] sm:text-xs lg:text-sm text-white'>

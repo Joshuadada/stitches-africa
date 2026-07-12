@@ -1,14 +1,27 @@
 "use client"
 
 import { useState } from "react"
-import { Search, Heart, ShoppingCart, Menu, X } from "lucide-react"
+import { Search, Heart, ShoppingCart, Menu, X, User } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
+import { useAuthStore } from "@/store/auth"
+import AccountMenu from "@/layout/account-menu"
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false)
   const [searchValue, setSearchValue] = useState("")
   const router = useRouter()
+  const { userType, setAuthToken, setUser, setUserType } = useAuthStore()
+  const isLoggedIn = userType === "client"
+
+  const handleSignOut = () => {
+    setAuthToken("")
+    setUser(null)
+    setUserType("none")
+    setAccountMenuOpen(false)
+    router.push("/")
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 font-sans">
@@ -43,28 +56,37 @@ const Header = () => {
         </div>
 
         {/* CTA Buttons */}
-        <div className="hidden xl:flex items-center gap-2.5 shrink-0">
-          <a
-            onClick={() => router.replace('/vendor/register')}
-            className="inline-flex items-center px-5 py-2.5 bg-[#b8924a] hover:bg-[#a07a38] text-white rounded-full text-sm font-semibold whitespace-nowrap transition-all hover:-translate-y-px cursor-pointer"
-          >
-            Become a Vendor
-          </a>
-          <a
-            href="/login"
-            className="inline-flex items-center px-6 py-2.5 bg-black hover:bg-gray-800 text-white rounded-full text-sm font-semibold whitespace-nowrap transition-all hover:-translate-y-px"
-          >
-            Login
-          </a>
-        </div>
+        {!isLoggedIn && (
+          <div className="hidden xl:flex items-center gap-2.5 shrink-0">
+            <a
+              onClick={() => router.replace('/vendor/register')}
+              className="inline-flex items-center px-5 py-2.5 bg-[#b8924a] hover:bg-[#a07a38] text-white rounded-full text-sm font-semibold whitespace-nowrap transition-all hover:-translate-y-px cursor-pointer"
+            >
+              Become a Vendor
+            </a>
+            <a
+              href="/login"
+              className="inline-flex items-center px-6 py-2.5 bg-black hover:bg-gray-800 text-white rounded-full text-sm font-semibold whitespace-nowrap transition-all hover:-translate-y-px"
+            >
+              Login
+            </a>
+          </div>
+        )}
 
         {/* Icon Actions */}
         <div className="hidden xl:flex items-center gap-1 shrink-0">
           <button className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer" aria-label="Wishlist">
             <Heart size={20} strokeWidth={1.8} className="text-[#b8924a] fill-[#b8924a]" />
           </button>
-          <button className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer" aria-label="Cart">
+          <button onClick={() => router.push('/cart')} className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer" aria-label="Cart">
             <ShoppingCart size={20} strokeWidth={1.8} className="text-black" />
+          </button>
+          <button
+            onClick={() => setAccountMenuOpen(true)}
+            className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+            aria-label="Account"
+          >
+            <User size={20} strokeWidth={1.8} className="text-black" />
           </button>
         </div>
 
@@ -73,8 +95,15 @@ const Header = () => {
           <button className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer" aria-label="Wishlist">
             <Heart size={20} strokeWidth={1.8} className="text-[#b8924a] fill-[#b8924a]" />
           </button>
-          <button className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer" aria-label="Cart">
+          <button onClick={() => router.push('/cart')} className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer" aria-label="Cart">
             <ShoppingCart size={20} strokeWidth={1.8} className="text-black" />
+          </button>
+          <button
+            onClick={() => setAccountMenuOpen(true)}
+            className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+            aria-label="Account"
+          >
+            <User size={20} strokeWidth={1.8} className="text-black" />
           </button>
           <button
             className="flex items-center justify-center p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
@@ -118,15 +147,50 @@ const Header = () => {
         </nav>
 
         {/* Mobile CTAs */}
-        <div className="flex flex-col gap-2.5 pb-1">
-          <a onClick={() => router.replace('/vendor/register')} className="flex justify-center px-5 py-3 bg-[#b8924a] hover:bg-[#a07a38] text-white rounded-full text-sm font-semibold transition-colors">
-            Become a Vendor
-          </a>
-          <a href="/login" className="flex justify-center px-5 py-3 bg-black hover:bg-gray-800 text-white rounded-full text-sm font-semibold transition-colors">
-            Login
-          </a>
-        </div>
+        {!isLoggedIn && (
+          <div className="flex flex-col gap-2.5 pb-1">
+            <a onClick={() => router.replace('/vendor/register')} className="flex justify-center px-5 py-3 bg-[#b8924a] hover:bg-[#a07a38] text-white rounded-full text-sm font-semibold transition-colors">
+              Become a Vendor
+            </a>
+            <a href="/login" className="flex justify-center px-5 py-3 bg-black hover:bg-gray-800 text-white rounded-full text-sm font-semibold transition-colors">
+              Login
+            </a>
+          </div>
+        )}
       </div>
+
+      {/* Account drawer backdrop */}
+      <div
+        aria-hidden={!accountMenuOpen}
+        onClick={() => setAccountMenuOpen(false)}
+        className={`fixed inset-0 bg-black/40 z-40 transition-opacity ${accountMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      />
+
+      {/* Account drawer */}
+      <aside
+        className={`fixed inset-y-0 right-0 z-50 w-72 sm:w-80 bg-white shadow-2xl transform transition-transform duration-300 ${
+          accountMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-[#E8E8E8]">
+          <p className="text-[#262626] font-medium text-sm">My Account</p>
+          <button
+            onClick={() => setAccountMenuOpen(false)}
+            className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+            aria-label="Close account menu"
+          >
+            <X size={18} className="text-black" />
+          </button>
+        </div>
+        <div className="h-[calc(100%-53px)]">
+          <AccountMenu
+            variant="drawer"
+            referralCode="DAVM-STA26"
+            onSignOut={handleSignOut}
+            onNavigate={() => setAccountMenuOpen(false)}
+          />
+        </div>
+      </aside>
     </header>
   )
 }

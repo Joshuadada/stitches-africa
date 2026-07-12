@@ -2,7 +2,9 @@
 
 import { ProductType, ReviewStatus } from "@/types/vendor";
 import Image from "next/image";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { reviewResponseSchema, ReviewResponseFormData } from "@/schema/vendor/review-response.schema";
 
 type ReviewCardProps = {
     reviewId: number;
@@ -36,12 +38,21 @@ const ReviewCard = ({
     onSubmitResponse,
     isSubmitting,
 }: ReviewCardProps) => {
-    const [response, setResponse] = useState(vendorResponseText ?? "");
+    const {
+        register,
+        handleSubmit: handleFormSubmit,
+        reset,
+        formState: { errors, isValid },
+    } = useForm<ReviewResponseFormData>({
+        resolver: zodResolver(reviewResponseSchema),
+        mode: "onChange",
+        defaultValues: { response: vendorResponseText ?? "" },
+    });
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (data: ReviewResponseFormData) => {
         try {
-            await onSubmitResponse(response);
-            setResponse(""); // Clear input after successful submit
+            await onSubmitResponse(data.response);
+            reset({ response: "" }); // Clear input after successful submit
         } catch (error) {
             // Leave input intact if submission fails
         }
@@ -91,21 +102,25 @@ const ReviewCard = ({
 
             {/* Response input — hide if already responded */}
             {!vendorResponseText && (
-                <div className="flex gap-2.5 flex-wrap">
-                    <input
-                        type="text"
-                        value={response}
-                        onChange={(e) => setResponse(e.target.value)}
-                        placeholder="Write a response..."
-                        className="flex-1 border border-[#D4CFC9] rounded-md px-3.5 py-2.5 text-sm text-[#1F1B17] placeholder:text-[#A8A29E] outline-none transition focus:border-[#B5894A]"
-                    />
-                    <button
-                        onClick={handleSubmit}
-                        disabled={isSubmitting || !response.trim()}
-                        className="bg-[#B5894A] hover:bg-[#9F763B] disabled:opacity-50 text-white text-sm font-medium px-4 py-2.5 rounded-md transition whitespace-nowrap cursor-pointer"
-                    >
-                        {isSubmitting ? "Submitting..." : "Submit response"}
-                    </button>
+                <div className="flex flex-col gap-1.5">
+                    <div className="flex gap-2.5 flex-wrap">
+                        <input
+                            type="text"
+                            {...register("response")}
+                            placeholder="Write a response..."
+                            className="flex-1 border border-[#D4CFC9] rounded-md px-3.5 py-2.5 text-sm text-[#1F1B17] placeholder:text-[#A8A29E] outline-none transition focus:border-[#B5894A]"
+                        />
+                        <button
+                            onClick={handleFormSubmit(handleSubmit)}
+                            disabled={isSubmitting || !isValid}
+                            className="bg-[#B5894A] hover:bg-[#9F763B] disabled:opacity-50 text-white text-sm font-medium px-4 py-2.5 rounded-md transition whitespace-nowrap cursor-pointer"
+                        >
+                            {isSubmitting ? "Submitting..." : "Submit response"}
+                        </button>
+                    </div>
+                    {errors.response && (
+                        <span className="text-[#E24B4A] text-xs">{errors.response.message}</span>
+                    )}
                 </div>
             )}
 

@@ -10,6 +10,13 @@ type SizesAndStockProps = {
     error?: FieldError | { message?: string };
 };
 
+const SIZE_GUIDE: Record<string, string> = {
+    S: "UK 6 · US 2 · EU 34",
+    M: "UK 8 · US 4 · EU 36",
+    L: "UK 10 · US 6 · EU 38",
+    XL: "UK 12 · US 8 · EU 40",
+};
+
 const SizesAndStock = ({
     sizes,
     selectedSizes,
@@ -25,11 +32,16 @@ const SizesAndStock = ({
             </p>
 
             <div className="border border-[#ECECEC] rounded-2xl p-5">
+                <div className="flex items-center justify-between mb-5">
+                    <span className="pl-8 text-sm text-[#737373]">Size</span>
+                    <span className="text-sm text-[#737373]">Units</span>
+                </div>
+
                 <div className="flex flex-col gap-5">
                     {sizes.map((size) => (
                         <div
                             key={size}
-                            className="grid grid-cols-3 items-center"
+                            className="flex items-center justify-between"
                         >
                             <div className="flex items-center gap-3">
                                 <input
@@ -42,30 +54,34 @@ const SizesAndStock = ({
                                 <div className="w-10 h-10 rounded-xl bg-[#B5894A] text-white flex items-center justify-center text-sm font-medium">
                                     {size}
                                 </div>
+
+                                {SIZE_GUIDE[size] && (
+                                    <span className="text-[10px] lg:text-xs xl:text-sm text-[#C8C0B5]">
+                                        {SIZE_GUIDE[size]}
+                                    </span>
+                                )}
                             </div>
 
-                            <div className="col-span-2 flex justify-end">
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => onUpdateStock(size, "decrement")}
-                                        className="w-8 h-8 rounded-md bg-[#F5F1EA] flex items-center justify-center"
-                                    >
-                                        <Minus size={14} />
-                                    </button>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => onUpdateStock(size, "decrement")}
+                                    className="w-8 h-8 rounded-md bg-[#F5F1EA] flex items-center justify-center"
+                                >
+                                    <Minus size={14} />
+                                </button>
 
-                                    <div className="w-10 h-8 rounded-md bg-black text-white flex items-center justify-center text-sm font-medium">
-                                        {stock[size]}
-                                    </div>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => onUpdateStock(size, "increment")}
-                                        className="w-8 h-8 rounded-md bg-[#F5F1EA] flex items-center justify-center"
-                                    >
-                                        <Plus size={14} />
-                                    </button>
+                                <div className="w-10 h-8 rounded-md bg-black text-white flex items-center justify-center text-sm font-medium">
+                                    {stock[size]}
                                 </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() => onUpdateStock(size, "increment")}
+                                    className="w-8 h-8 rounded-md bg-[#F5F1EA] flex items-center justify-center"
+                                >
+                                    <Plus size={14} />
+                                </button>
                             </div>
                         </div>
                     ))}

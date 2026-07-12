@@ -1,4 +1,4 @@
-import ChangePassword from '@/features/auth/change-password'
+import ChangePassword from '@/features/customer/auth/change-password'
 
 const ChangePasswordPage = () => {
     return (

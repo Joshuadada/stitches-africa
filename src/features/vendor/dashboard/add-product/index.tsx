@@ -12,6 +12,7 @@ import CategorySelector from "./category-selector";
 import PriceSummary from "./prices-summary";
 import ProductImages from "./product-images";
 import SizesAndStock from "./sizes-and-stock";
+import SizeChartModal from "@/shared/modals/size-chart-modal";
 import { useVendorHeaderStore } from "@/store/vendor-header";
 import { useGetBrands, useGetProductTypes, useSubmitAddProduct } from "@/hooks/api/vendor/useVendorProducts";
 import { VendorProduct } from "@/types/vendor";
@@ -81,6 +82,8 @@ const AddProduct = () => {
     );
 
     const [images, setImages] = useState<(File | string)[]>([]);
+
+    const [showSizeGuide, setShowSizeGuide] = useState(false);
 
     const {
         register,
@@ -302,8 +305,8 @@ const AddProduct = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md-18 md:mb-18 lg:mb-22 xl:mb-26">
-                <div className="lg:col-span-7 flex flex-col gap-12">
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 md-18 md:mb-18 lg:mb-22 xl:mb-26">
+                <div className="xl:col-span-7 flex flex-col gap-12">
                     <ProductImages
                         images={images}
                         onUpload={handleImageUpload}
@@ -338,7 +341,7 @@ const AddProduct = () => {
                     />
                 </div>
 
-                <div className="lg:col-span-5 flex flex-col gap-6">
+                <div className="xl:col-span-5 flex flex-col gap-6">
                     <SizesAndStock
                         sizes={SIZES}
                         selectedSizes={selectedSizes}
@@ -347,6 +350,14 @@ const AddProduct = () => {
                         onUpdateStock={handleUpdateStock}
                         error={errors.sizes}
                     />
+                    <div className="flex justify-end">
+                        <span
+                            onClick={() => setShowSizeGuide(true)}
+                            className="text-[#B5894A] hover:text-[#9F763D] underline cursor-pointer font-medium text-sm"
+                        >
+                            View Size guide
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -366,6 +377,10 @@ const AddProduct = () => {
                     </p>
                 </Button>
             </div>
+
+            {showSizeGuide && (
+                <SizeChartModal onClose={() => setShowSizeGuide(false)} />
+            )}
         </form>
     );
 };

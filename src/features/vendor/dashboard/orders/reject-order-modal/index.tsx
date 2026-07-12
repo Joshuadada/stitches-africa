@@ -1,15 +1,12 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@/shared/components/button";
 import Select from "@/shared/components/select";
 import { X, Info } from "lucide-react";
 import { toCurrency } from "@/utils/util-method";
-
-type RejectOrderFormData = {
-    reason: string;
-    message?: string;
-};
+import { rejectOrderSchema, RejectOrderFormData } from "@/schema/vendor/reject-order.schema";
 
 type RejectOrderModalProps = {
     isPending: boolean;
@@ -52,8 +49,11 @@ const RejectOrderModal = ({
     const {
         register,
         handleSubmit,
-        formState: { errors },
-    } = useForm<RejectOrderFormData>();
+        formState: { errors, isValid },
+    } = useForm<RejectOrderFormData>({
+        resolver: zodResolver(rejectOrderSchema),
+        mode: "onChange",
+    });
 
     const badge = TYPE_BADGE[order?.product.type ?? "MTO"];
 
@@ -125,9 +125,6 @@ const RejectOrderModal = ({
                         register={register}
                         error={errors.reason}
                         options={REJECTION_REASONS}
-                        registerOptions={{
-                            required: "Please select a reason for rejection",
-                        }}
                     />
 
                     {/* Message textarea */}
@@ -157,7 +154,7 @@ const RejectOrderModal = ({
 
                         <Button
                             type="submit"
-                            disabled={isPending}
+                            disabled={isPending || !isValid}
                             className="bg-[#E24B4A] hover:bg-[#C0392B] py-3 md:py-3.5"
                         >
                             <p className="text-white text-sm font-medium">

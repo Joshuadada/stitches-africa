@@ -5,19 +5,12 @@ import Button from '@/shared/components/button'
 import Image from 'next/image'
 import AddPayoutModal from './add-payout-modal'
 import { BankAccount } from '@/types/vendor'
+import { useSubmitUpdateBankAccount } from '@/hooks/api/vendor/useVendorPayouts'
 
-const AccountCard = ({accountDetails}: {accountDetails: BankAccount | null}) => {
+const AccountCard = ({ accountDetails }: { accountDetails: BankAccount | null }) => {
     const [openModal, setOpenModal] = useState(false)
 
     const handleCloseModal = () => {
-        setOpenModal(false)
-    }
-
-    const handleSubmit = (data: any) => {
-        console.log(data)
-
-        // API call here
-
         setOpenModal(false)
     }
 
@@ -84,9 +77,7 @@ const AccountCard = ({accountDetails}: {accountDetails: BankAccount | null}) => 
 
             {openModal && (
                 <AddPayoutModal
-                    isPending={false}
                     onClose={handleCloseModal}
-                    onSubmit={handleSubmit}
                     accountDetails={accountDetails || null}
                 />
             )}

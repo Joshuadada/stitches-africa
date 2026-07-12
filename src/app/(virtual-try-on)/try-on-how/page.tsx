@@ -1,4 +1,4 @@
-import TryOnHow from "@/features/virtual-try-on/try-on-how"
+import TryOnHow from "@/features/customer/virtual-try-on/try-on-how"
 
 const TryOnHowPage = () => {
   return (

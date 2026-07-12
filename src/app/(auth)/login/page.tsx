@@ -1,4 +1,4 @@
-import Login from '@/features/auth/login'
+import Login from '@/features/customer/auth/login'
 import GoogleOAuthClientProvider from '@/providers/google-oauth-client-provider';
 
 const LoginPage = () => {

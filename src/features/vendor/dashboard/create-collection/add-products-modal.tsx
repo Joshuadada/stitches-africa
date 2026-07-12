@@ -1,9 +1,12 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import Button from "@/shared/components/button"
 import { useVendorProducts } from "@/hooks/api/vendor/useVendorProducts"
 import { Product } from "@/types/vendor"
+import { addProductsSelectionSchema, AddProductsSelectionFormData } from "@/schema/vendor/add-products-selection.schema"
 
 const AddProductsModal = ({
   open,
@@ -15,19 +18,35 @@ const AddProductsModal = ({
   onAdd: (items: Product[]) => void
 }) => {
   const [query, setQuery] = useState("")
-  const [selected, setSelected] = useState<Record<string, boolean>>({})
   const { data: products = [], isLoading } = useVendorProducts()
 
+  const {
+    watch,
+    setValue,
+    handleSubmit,
+    reset,
+    formState: { isValid },
+  } = useForm<AddProductsSelectionFormData>({
+    resolver: zodResolver(addProductsSelectionSchema),
+    mode: "onChange",
+    defaultValues: { selectedIds: [] },
+  })
+
+  const selectedIds = watch("selectedIds")
+
   useEffect(() => {
-    if (!open) setSelected({})
+    if (!open) reset({ selectedIds: [] })
   }, [open])
 
   const filtered = useMemo(() => products.filter((p) => p.name.toLowerCase().includes(query.toLowerCase())), [query, products])
 
-  const toggle = (id: string) => setSelected((s) => ({ ...s, [id]: !s[id] }))
+  const toggle = (id: string) => {
+    const next = selectedIds.includes(id) ? selectedIds.filter((x) => x !== id) : [...selectedIds, id]
+    setValue("selectedIds", next, { shouldValidate: true })
+  }
 
-  const handleAdd = () => {
-    const items = products.filter((p) => selected[p.id])
+  const onSubmit = (data: AddProductsSelectionFormData) => {
+    const items = products.filter((p) => data.selectedIds.includes(p.id))
     onAdd(items)
     onClose()
   }
@@ -52,9 +71,9 @@ const AddProductsModal = ({
           ) : (
             filtered.map((p) => (
               <div key={p.id} className="flex items-center gap-3.5 py-3.5 border-b border-[#E3DDD0]">
-                <input type="checkbox" checked={!!selected[p.id]} onChange={() => toggle(p.id)} className="w-4 h-4" />
+                <input type="checkbox" checked={selectedIds.includes(p.id)} onChange={() => toggle(p.id)} className="w-4 h-4" />
 
-                <div className="h-10 w-10 bg-[#F3EFEA] rounded-md overflow-hidden flex-shrink-0">
+                <div className="h-10 w-10 bg-[#F3EFEA] rounded-md overflow-hidden shrink-0">
                   {p.imageFile ? (
                     <img src={p.imageFile} alt={p.name} className="h-full w-full object-cover" />
                   ) : (
@@ -80,8 +99,8 @@ const AddProductsModal = ({
         <div className="mt-6 flex items-center justify-between">
           <button onClick={onClose} className="text-sm text-[#6A5D4D]">Cancel</button>
           <div>
-            <Button onClick={handleAdd} className="bg-[#B5894A] px-4 py-2 text-white">
-              <span className="text-sm">Add {Object.values(selected).filter(Boolean).length} products</span>
+            <Button onClick={handleSubmit(onSubmit)} disabled={!isValid} className="bg-[#B5894A] px-4 py-2 text-white">
+              <span className="text-sm">Add {selectedIds.length} products</span>
             </Button>
           </div>
         </div>

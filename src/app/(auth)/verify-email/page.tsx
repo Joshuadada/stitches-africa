@@ -1,4 +1,4 @@
-import VerifyEmail from '@/features/auth/verify-email'
+import VerifyEmail from '@/features/customer/auth/verify-email'
 
 const VerifyEmailPage = () => {
   return (

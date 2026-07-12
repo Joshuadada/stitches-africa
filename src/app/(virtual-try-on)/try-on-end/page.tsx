@@ -1,4 +1,4 @@
-import TryOnEnd from "@/features/virtual-try-on/try-on-end"
+import TryOnEnd from "@/features/customer/virtual-try-on/try-on-end"
 
 const TryOnEndPage = () => {
   return (

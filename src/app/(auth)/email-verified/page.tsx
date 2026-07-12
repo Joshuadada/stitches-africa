@@ -1,4 +1,4 @@
-import EmailVerified from '@/features/auth/email-verified'
+import EmailVerified from '@/features/customer/auth/email-verified'
 
 const EmailVerifiedPage = () => {
   return (

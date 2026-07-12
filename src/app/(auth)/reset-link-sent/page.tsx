@@ -1,4 +1,4 @@
-import ResetLinkSent from '@/features/auth/reset-link-sent'
+import ResetLinkSent from '@/features/customer/auth/reset-link-sent'
 
 const ResetLinkSentPage = () => {
     return (

@@ -1,16 +1,18 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import ImageUpload from "./image-upload";
 import { useMultiFiles } from "@/shared/hooks/useMultifiles";
 import { MultiFileUpload } from "./multifile-upload";
 import Button from "@/shared/components/button";
 import { useRouter } from "next/navigation";
 import { useAuthStore, useVendorOnboardingFilesStore } from "@/store/auth";
+import { vendorDocumentUploadSchema, VendorDocumentUploadFormData } from "@/schema/auth/vendor-document-upload.schema";
 
 const VendorDocumentUpload = () => {
-    const [additionalFile, setAdditionalFile] = useState<File | null>(null);
-    const router = useRouter(); // ✅ fixed: was missing ()
+    const router = useRouter();
     const { setVendorOnboardingData, vendorOnboardingData } = useAuthStore();
     const { setAdditionalFileData, setGovIdFiles, setPortfolioFiles } = useVendorOnboardingFilesStore()
 
@@ -23,19 +25,36 @@ const VendorDocumentUpload = () => {
     const govId = useMultiFiles();
     const portfolio = useMultiFiles();
 
-    // Validate required fields before proceeding
-    const isValid = additionalFile !== null && govId.files.length > 0;
+    const {
+        setValue,
+        handleSubmit,
+        formState: { errors, isValid },
+    } = useForm<VendorDocumentUploadFormData>({
+        resolver: zodResolver(vendorDocumentUploadSchema),
+        mode: "onChange",
+        defaultValues: {
+            additionalFile: null,
+            govIdFiles: [],
+            portfolioFiles: [],
+        },
+    });
 
-    const handleContinue = () => {
-        if (!isValid) return;
+    useEffect(() => {
+        setValue("govIdFiles", govId.files, { shouldValidate: true });
+    }, [govId.files]);
 
+    useEffect(() => {
+        setValue("portfolioFiles", portfolio.files, { shouldValidate: true });
+    }, [portfolio.files]);
+
+    const handleContinue = (data: VendorDocumentUploadFormData) => {
         setVendorOnboardingData({
             ...vendorOnboardingData!,
-            additionalFileData: additionalFile
+            additionalFileData: data.additionalFile
                 ? {
-                    name: additionalFile.name,
-                    size: additionalFile.size,
-                    type: additionalFile.type,
+                    name: data.additionalFile.name,
+                    size: data.additionalFile.size,
+                    type: data.additionalFile.type,
                 }
                 : null,
             govIdFilesData: govId.files.map((f) => ({
@@ -54,7 +73,7 @@ const VendorDocumentUpload = () => {
             })),
         });
 
-        setAdditionalFileData(additionalFile)
+        setAdditionalFileData(data.additionalFile)
         setGovIdFiles(govId.files.map(f => f.file))
         setPortfolioFiles(portfolio.files.map(f => f.file))
 
@@ -77,16 +96,16 @@ const VendorDocumentUpload = () => {
                 </p>
             </div>
 
-            <div className="flex flex-col gap-8 sm:gap-10 md:gap-12 lg:gap-14 xl:gap-16">
+            <form onSubmit={handleSubmit(handleContinue)} className="flex flex-col gap-8 sm:gap-10 md:gap-12 lg:gap-14 xl:gap-16">
                 {/* Additional Documents */}
                 <div className="flex flex-col gap-3 sm:gap-4 md:gap-5">
                     <h5 className="text-black text-[8px] md:text-[10px] lg:text-xs tracking-wide">
                         ADDITIONAL DOCUMENTS *
                     </h5>
-                    <ImageUpload onChange={(file) => setAdditionalFile(file)} />
+                    <ImageUpload onChange={(file) => setValue("additionalFile", file, { shouldValidate: true })} />
                     {/* Validation hint */}
-                    {additionalFile === null && (
-                        <p className="text-red-500 text-xs">This document is required.</p>
+                    {errors.additionalFile && (
+                        <p className="text-red-500 text-xs">{errors.additionalFile.message}</p>
                     )}
                 </div>
 
@@ -101,8 +120,8 @@ const VendorDocumentUpload = () => {
                         onRemove={govId.removeFile}
                     />
                     {/* Validation hint */}
-                    {govId.files.length === 0 && (
-                        <p className="text-red-500 text-xs">At least one ID document is required.</p>
+                    {errors.govIdFiles && (
+                        <p className="text-red-500 text-xs">{errors.govIdFiles.message}</p>
                     )}
                 </div>
 
@@ -129,8 +148,7 @@ const VendorDocumentUpload = () => {
                         </p>
                     </Button>
                     <Button
-                        onClick={handleContinue}
-                        type="button"
+                        type="submit"
                         className="bg-[#171717] p-3"
                         disabled={!isValid}
                     >
@@ -139,7 +157,7 @@ const VendorDocumentUpload = () => {
                         </p>
                     </Button>
                 </div>
-            </div>
+            </form>
         </div>
     );
 };

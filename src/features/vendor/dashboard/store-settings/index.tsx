@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import StorePreview from "./store-preview";
 import Button from "@/shared/components/button";
 import StoreLogo from "./store-logo";
@@ -12,17 +13,11 @@ import ProductCategories from "./product-categories";
 import StoreBanner from "./store-banner";
 import { useVendorHeaderStore } from "@/store/vendor-header";
 import { useAuthStore } from "@/store/auth";
+import { storeSettingsSchema, StoreSettingsFormData } from "@/schema/vendor/store-settings.schema";
+
+export type { StoreSettingsFormData };
 
 type ProductCategory = "rtw" | "mto" | "bespoke";
-
-export type StoreSettingsFormData = {
-    brandStory: string;
-    address: string;
-    email: string;
-    phone: string;
-    emailNotifications: boolean;
-    inAppNotifications: boolean;
-};
 
 const StoreSettings = () => {
     const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -39,7 +34,9 @@ const StoreSettings = () => {
         })
     }, [vendorProfile])
 
-    const { register, handleSubmit, watch } = useForm<StoreSettingsFormData>({
+    const { register, handleSubmit, watch, formState: { errors, isValid } } = useForm<StoreSettingsFormData>({
+        resolver: zodResolver(storeSettingsSchema),
+        mode: "onChange",
         defaultValues: {
             brandStory: "Adire Couture brings heritage indigo craft to the world each piece hand-dyed by artisans in Abeokuta.",
             address: "12 Adeniyi Jones Ave, Ikeja, Lagos",
@@ -59,15 +56,15 @@ const StoreSettings = () => {
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
-            <form onSubmit={handleSubmit((data) => { })} className="space-y-7">
+            <form onSubmit={handleSubmit((data) => console.log("Store settings:", data))} className="space-y-7">
                 <StoreLogo preview={logoPreview} onUpload={setLogoPreview} />
                 <StoreBanner preview={bannerPreview} onUpload={setBannerPreview} />
-                <BrandStory register={register} watch={watch} />
+                <BrandStory register={register} watch={watch} error={errors.brandStory} />
                 <ProductCategories active={activeCategories} onToggle={toggleCategory} />
-                <ContactInformation register={register} />
+                <ContactInformation register={register} errors={errors} />
                 <NotificationPreferences register={register} />
 
-                <Button type="submit" disabled={false} className="w-full bg-[#B5894A] hover:bg-[#9F763B] py-3">
+                <Button type="submit" disabled={!isValid} className="w-full bg-[#B5894A] hover:bg-[#9F763B] py-3">
                     <p className="text-white text-sm font-medium">
                         {"Save changes"}
                     </p>

@@ -1,4 +1,4 @@
-import TryOnLook from "@/features/virtual-try-on/try-on-look"
+import TryOnLook from "@/features/customer/virtual-try-on/try-on-look"
 
 const TryOnLookPage = () => {
   return (

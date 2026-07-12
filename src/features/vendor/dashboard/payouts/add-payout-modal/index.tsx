@@ -1,39 +1,34 @@
 "use client";
 
-import { addPayoutSchema } from "@/schema/vendor/payout-schema";
+import { useGetBankAccountDetails, useGetBanks, useSubmitUpdateBankAccount } from "@/hooks/api/vendor/useVendorPayouts";
+import { addPayoutSchema, AddPayoutSchemaType } from "@/schema/vendor/payout-schema";
 import Button from "@/shared/components/button";
 import Input from "@/shared/components/input";
+import Loader from "@/shared/components/loader";
 import Select from "@/shared/components/select";
 import { BankAccount } from "@/types/vendor";
+import { showToast } from "@/utils/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 type AddPayoutModalProps = {
-    isPending: boolean;
     onClose: () => void;
-    onSubmit: (data: any) => void;
     accountDetails: BankAccount | null;
 };
 
-type FormValues = {
-    bank: string;
-    accountNumber: string;
-    accountName: string;
-};
-
 const AddPayoutModal = ({
-    isPending,
     onClose,
-    onSubmit,
     accountDetails
 }: AddPayoutModalProps) => {
     const {
         register,
         handleSubmit,
         watch,
-        formState: { errors, isValid, isSubmitting },
-    } = useForm<FormValues>({
+        setValue,
+        formState: { errors, isValid },
+    } = useForm<AddPayoutSchemaType>({
         resolver: zodResolver(addPayoutSchema),
         mode: "onChange",
         defaultValues: {
@@ -43,7 +38,65 @@ const AddPayoutModal = ({
         },
     });
 
+    const {
+        data: banks,
+        isLoading: isBanksLoading,
+        error: banksError,
+    } = useGetBanks();
+
+    useEffect(() => {
+        if (banksError) {
+            showToast({
+                type: "error",
+                title: "Error",
+                message: banksError.message,
+            });
+        }
+    }, [banksError]);
+
+    const { onSubmit, isPending } = useSubmitUpdateBankAccount(() => {
+        onClose();
+    })
+
+    const bankCode = watch("bank");
     const accountNumber = watch("accountNumber");
+
+    const {
+        data: resolvedAccount,
+        isFetching: isResolvingAccount,
+        error: resolveAccountError,
+    } = useGetBankAccountDetails({ accountNumber, bankCode });
+
+    useEffect(() => {
+        if (resolvedAccount) {
+            setValue("accountName", resolvedAccount.accountName, {
+                shouldValidate: true,
+            });
+        }
+    }, [resolvedAccount, setValue]);
+
+    useEffect(() => {
+        if (resolveAccountError) {
+            setValue("accountName", "");
+            showToast({
+                type: "error",
+                title: "Error",
+                message: resolveAccountError.message,
+            });
+        }
+    }, [resolveAccountError, setValue]);
+
+    const handleFormSubmit = (data: AddPayoutSchemaType) => {
+        onSubmit({
+            bankAccountNumber: data.accountNumber,
+            bankCode: data.bank,
+            bankAccountName: data.accountName,
+        });
+    };
+
+    if (isBanksLoading) {
+        return <Loader />;
+    }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-[2px] px-4 py-6 overflow-y-auto">
@@ -101,7 +154,7 @@ const AddPayoutModal = ({
                     </p>
 
                     <form
-                        onSubmit={handleSubmit(onSubmit)}
+                        onSubmit={handleSubmit(handleFormSubmit)}
                         className="space-y-2.5 sm:space-y-3.5 md:space-y-4.5 lg:space-y-5.5"
                     >
                         <Select
@@ -111,24 +164,10 @@ const AddPayoutModal = ({
                             placeholder="Select your bank"
                             register={register}
                             error={errors.bank}
-                            options={[
-                                {
-                                    label: "GTBank",
-                                    value: "gtbank",
-                                },
-                                {
-                                    label: "Access Bank",
-                                    value: "access",
-                                },
-                                {
-                                    label: "UBA",
-                                    value: "uba",
-                                },
-                                {
-                                    label: "First Bank",
-                                    value: "first-bank",
-                                },
-                            ]}
+                            options={banks?.map((bank) => ({
+                                label: bank.name,
+                                value: bank.code,
+                            })) || []}
                             registerOptions={{
                                 required: "Bank is required",
                             }}
@@ -157,7 +196,7 @@ const AddPayoutModal = ({
                         />
 
                         <Input
-                            label="Account name"
+                            label={isResolvingAccount ? "Account name (Loading...)" : "Account name"}
                             name="accountName"
                             readonly
                             register={register}
@@ -178,8 +217,8 @@ const AddPayoutModal = ({
 
                             <Button
                                 type="submit"
-                                disabled={!isValid || isSubmitting}
-                                loading={isSubmitting}
+                                disabled={!isValid || isPending}
+                                loading={isPending}
                                 className="bg-[#B5894A] hover:bg-[#9F763B] py-3 md:py-3.5 lg:py-4"
                             >
                                 <p className="text-white text-sm sm:text-base font-medium">
