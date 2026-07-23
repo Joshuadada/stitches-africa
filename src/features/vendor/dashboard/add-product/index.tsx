@@ -132,11 +132,6 @@ const AddProduct = () => {
         setValue("sizes", formattedSizes, { shouldValidate: true });
     };
 
-    const handleCategoryChange = (category: string) => {
-        setSelectedCategory(category);
-        setValue("category", category, { shouldValidate: true });
-    };
-
     const handleToggleSize = (size: string) => {
         setSelectedSizes((prev) => {
             const updated = { ...prev, [size]: !prev[size] };

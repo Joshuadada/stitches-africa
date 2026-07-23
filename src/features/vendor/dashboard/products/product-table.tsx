@@ -5,6 +5,7 @@ import { showToast } from "@/utils/toast";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation"
 import { useState } from "react";
+import Image from "next/image";
 
 const ProductTable = ({ products }: { products: Product[] }) => {
     const router = useRouter();
@@ -61,9 +62,9 @@ const ProductTable = ({ products }: { products: Product[] }) => {
                             CATEGORY
                         </th>
 
-                        <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal pl-6 lg:pl-8 py-2 sm:py-4 md:py-6 lg:py-8">
+                        {/* <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal pl-6 lg:pl-8 py-2 sm:py-4 md:py-6 lg:py-8">
                             PRICE
-                        </th>
+                        </th> */}
 
                         <th className="text-left text-[#736551] text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-normal pl-6 lg:pl-8 py-2 sm:py-4 md:py-6 lg:py-8">
                             PRODUCT FEE
@@ -101,7 +102,9 @@ const ProductTable = ({ products }: { products: Product[] }) => {
                                 {/* PRODUCT */}
                                 <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7">
                                     <div className="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-5">
-                                        <div className="relative w-6.5 sm:w-8.5 md:w-10.5 lg:w-12.5 h-5 sm:h-7 md:h-9 lg:h-11 rounded-lg overflow-hidden bg-black shrink-0"></div>
+                                        <div className="relative w-6.5 sm:w-8.5 md:w-10.5 lg:w-12.5 h-5 sm:h-7 md:h-9 lg:h-11 rounded-lg overflow-hidden shrink-0">
+                                            <Image src={product.imageFile} alt={product.name} layout="fill" objectFit="cover" />
+                                        </div>
 
                                         <h3 className="text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm whitespace-nowrap">
                                             {product.name}
@@ -123,7 +126,6 @@ const ProductTable = ({ products }: { products: Product[] }) => {
                                     {toNaira(product.price)}
                                 </td>
 
-                                {/* CUSTOMER FEES */}
                                 <td className="pl-6 lg:pl-8 py-3 md:py-5 lg:py-7 text-black text-[8px] sm:text-[10px] md:text-xs lg:text-sm whitespace-nowrap">
                                     {toNaira(product.markupAmount)}
                                 </td>
